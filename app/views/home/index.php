@@ -20,7 +20,7 @@
             </div>
             <div class="col-lg-6">
                 <div class="hero-image text-center">
-                    <img src="<?= BASE_URL ?>/public/images/hero-sneaker.png" alt="Tênis URBANSTREET" class="img-fluid">
+                    <img src="<?= BASE_URL ?>/images/hero-sneaker.png" alt="Tênis URBANSTREET" class="img-fluid">
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
                     <div class="col-lg-6 col-xl-3 mb-4">
                         <div class="product-card h-100">
                             <div class="product-image position-relative">
-                                <img src="<?= $product['image'] ?? BASE_URL . '/public/images/no-image.jpg' ?>" 
+                                <img src="<?= $product['image'] ?? BASE_URL . '/images/no-image.jpg' ?>" 
                                      alt="<?= htmlspecialchars($product['name']) ?>" 
                                      class="img-fluid">
                                 <div class="product-badge">
