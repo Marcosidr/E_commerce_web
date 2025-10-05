@@ -168,13 +168,11 @@ INSERT INTO categories (name, slug, description, sort_order) VALUES
 
 -- Inserir produtos em destaque
 INSERT INTO products (name, slug, description, short_description, price, category_id, brand, image, featured, sku) VALUES 
-('Air Force Urban Black', 'air-force-urban-black', 'Tênis Air Force com design urbano em preto premium. Conforto e estilo para o streetwear autêntico.', 'Tênis urbano premium em preto', 599.90, 1, 'NIKE', 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=800', TRUE, 'AF-URB-BLACK-001'),
+('Air Force Urban Black', 'air-force-urban-black', 'Tênis Air Force com design urbano em preto premium. Conforto e estilo para o streetwear autêntico.', 'Tênis urbano premium em preto', 599.90, 1, 'NIKE', 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=800', 1, 'AF-URB-BLACK-001'),
+('Dunk Low Street Edition', 'dunk-low-street-edition', 'Tênis Dunk Low com acabamento street edition. Perfect para compor looks urbanos com personalidade.', 'Tênis Dunk Low street edition', 749.90, 1, 'NIKE', 'https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=800', 1, 'DL-ST-001'),
+('Oversized Tee Black', 'oversized-tee-black', 'Camiseta oversized preta com corte moderno. Tecido premium e confortável para uso diário no estilo urbano.', 'Camiseta oversized preta premium', 149.90, 2, 'URBAN STYLE', 'https://images.pexels.com/photos/8532616/pexels-photo-8532616.jpeg?auto=compress&cs=tinysrgb&w=800', 1, 'OST-BLACK-001'),
+('Hoodie Oversized Gray', 'hoodie-oversized-gray', 'Moletom hoodie oversized cinza com capuz. Algodão premium para máximo conforto e estilo urbano.', 'Moletom hoodie oversized cinza', 299.90, 3, 'URBAN STYLE', 'https://images.pexels.com/photos/8532592/pexels-photo-8532592.jpeg?auto=compress&cs=tinysrgb&w=800', 1, 'HOO-GRAY-001');
 
-('Dunk Low Street Edition', 'dunk-low-street-edition', 'Tênis Dunk Low com acabamento street edition. Perfect para compor looks urbanos com personalidade.', 'Tênis Dunk Low street edition', 749.90, 1, 'NIKE', 'https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=800', TRUE, 'DL-ST-001'),
-
-('Oversized Tee Black', 'oversized-tee-black', 'Camiseta oversized preta com corte moderno. Tecido premium e confortável para uso diário no estilo urbano.', 'Camiseta oversized preta premium', 149.90, 2, 'URBAN STYLE', 'https://images.pexels.com/photos/8532616/pexels-photo-8532616.jpeg?auto=compress&cs=tinysrgb&w=800', TRUE, 'OST-BLACK-001'),
-
-('Hoodie Oversized Gray', 'hoodie-oversized-gray', 'Moletom hoodie oversized cinza com capuz. Algodão premium para máximo conforto e estilo urbano.', 'Moletom hoodie oversized cinza', 299.90, 3, 'URBAN STYLE', 'https://images.pexels.com/photos/8532592/pexels-photo-8532592.jpeg?auto=compress&cs=tinysrgb&w=800', TRUE, 'HOO-GRAY-001');
 
 -- Criar usuário administrador padrão (senha: admin123)
 INSERT INTO users (name, email, password, role) VALUES 

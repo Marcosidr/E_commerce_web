@@ -2,13 +2,10 @@
 /**
  * URBANSTREET E-commerce - Sistema MVC
  * Loja de Streetwear Autêntica
- * 
- * Ponto de entrada principal da aplicação
- * URL de acesso: http://localhost/E-comerce/public/
  */
 
 // Carrega o autoloader do Composer
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Configurações básicas do PHP
 error_reporting(E_ALL);
@@ -16,11 +13,12 @@ ini_set('display_errors', 1);
 session_start();
 
 // Define constantes do projeto
-define('ROOT_PATH', dirname(__DIR__));
+define('ROOT_PATH', realpath(__DIR__ . '/..')); // sobe um nível
 define('APP_PATH', ROOT_PATH . '/app');
 define('CONFIG_PATH', ROOT_PATH . '/config');
-define('PUBLIC_PATH', __DIR__);
+define('PUBLIC_PATH', ROOT_PATH . '/public');
 define('BASE_URL', 'http://localhost/E-comerce/public');
+
 
 try {
     // Carrega as rotas
@@ -28,7 +26,7 @@ try {
     
     // Obtém a URL atual
     $url = $_SERVER['REQUEST_URI'];
-    $url = str_replace('/E-comerce/public', '', $url); // Remove base path com /public
+    $url = str_replace('/E-comerce/public', '', $url); // Remove base path
     $url = parse_url($url, PHP_URL_PATH);
     $url = ltrim($url, '/');
     

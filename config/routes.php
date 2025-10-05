@@ -31,3 +31,4 @@ $router->add('/^categoria\/calcas$/', 'Product', 'categoria');
 $router->add('/^categoria\/acessorios$/', 'Product', 'categoria');
 
 return $router;
+// $router->get('/admin', [AdminController::class, 'dashboard']);
