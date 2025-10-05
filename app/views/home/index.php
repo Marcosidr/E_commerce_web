@@ -1,30 +1,68 @@
-<!-- Hero Section -->
-<section class="hero-section bg-dark text-white position-relative">
-    <div class="hero-overlay"></div>
-    <div class="container">
-        <div class="row align-items-center min-vh-100">
-            <div class="col-lg-6">
-                <div class="hero-content">
-                    <span class="badge bg-primary mb-3">NOVA COLEÇÃO</span>
-                    <h1 class="display-2 fw-black mb-4">
+<?php
+    // Força uso prioritário da imagem específica solicitada (banners/tenis.png)
+    $heroImage = null;
+    $forced = 'banners/tenis.png';
+    $forcedPath = PUBLIC_PATH . '/images/' . $forced;
+    if (file_exists($forcedPath) && is_file($forcedPath)) {
+        $heroImage = $forced; // guarda caminho relativo para mapear classe
+    }
+
+    // Lista de candidatos caso a principal não esteja disponível
+    if (!$heroImage) {
+        $heroCandidates = [
+            'banners/tenis.png',
+            'banners/banner.jpg',
+            'hero-sneaker.png', 'hero-sneaker.jpg',
+            'hero-tenis.jpg', 'banner-tenis.jpg', 'hero.jpg'
+        ];
+        foreach ($heroCandidates as $file) {
+            $full = PUBLIC_PATH . '/images/' . $file;
+            if (file_exists($full) && is_file($full)) {
+                $heroImage = $file;
+                break;
+            }
+        }
+    }
+
+    if (!$heroImage) { $heroImage = 'fallback'; }
+
+    $heroClassMap = [
+        'banners/tenis.png'    => 'hero-bg-tenis-png',
+        'banners/banner.jpg'   => 'hero-bg-banner-jpg',
+        'hero-sneaker.png'     => 'hero-bg-hero-sneaker-png',
+        'hero-sneaker.jpg'     => 'hero-bg-hero-sneaker-jpg',
+        'hero-tenis.jpg'       => 'hero-bg-hero-tenis-jpg',
+        'banner-tenis.jpg'     => 'hero-bg-banner-tenis-jpg',
+        'hero.jpg'             => 'hero-bg-hero-jpg',
+        'fallback'             => 'hero-bg-fallback'
+    ];
+    $heroBgClass = $heroClassMap[$heroImage] ?? 'hero-bg-fallback';
+?>
+<!-- Hero Section com blur -->
+<section class="hero-section <?= htmlspecialchars($heroBgClass) ?>">
+    <div class="hero-backdrop"></div>
+    <div class="container position-relative">
+        <div class="row min-vh-100 align-items-center">
+            <div class="col-xl-7 col-lg-8 col-md-10">
+                <div class="hero-glass">
+                    <span class="badge badge-nova mb-3">NOVA COLEÇÃO</span>
+                    <h1 class="display-2 fw-black mb-4 hero-title">
                         ESTILO<br>
                         URBANO<br>
-                        <span class="text-primary">AUTÊNCTICO</span>
+                        <span class="text-primary">AUTÊNTICO</span>
                     </h1>
-                    <p class="lead mb-4">Descubra as últimas tendências em streetwear. Moda que representa sua atitude.</p>
-                    <div class="d-flex gap-3">
-                        <a href="<?= BASE_URL ?>/catalogo" class="btn btn-primary btn-lg px-4">VER COLEÇÃO</a>
+                    <p class="lead mb-4 hero-sub">
+                        Descubra as últimas tendências em streetwear. Moda que representa sua atitude.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="<?= BASE_URL ?>/catalogo" class="btn btn-primary btn-lg px-4 shadow-sm">VER COLEÇÃO</a>
                         <a href="<?= BASE_URL ?>/categoria/tenis" class="btn btn-outline-light btn-lg px-4">TÊNIS EXCLUSIVOS</a>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="hero-image text-center">
-                    <img src="<?= BASE_URL ?>/images/hero-sneaker.png" alt="Tênis URBANSTREET" class="img-fluid">
-                </div>
-            </div>
         </div>
     </div>
+    <div class="hero-noise"></div>
 </section>
 
 <!-- Featured Products -->
@@ -74,12 +112,45 @@
         </div>
     </div>
 </section>
+<!-- Newsletter Section -->
+<section class="newsletter-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="display-5 fw-bold mb-3">FIQUE POR DENTRO</h2>
+                <p class="lead mb-0">
+                    Inscreva-se na nossa newsletter e receba em primeira mão as novidades, 
+                    promoções exclusivas e drops limitados
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <form class="newsletter-form-home" id="newsletterFormHome">
+                    <div class="input-group input-group-lg">
+                        <input type="email" class="form-control" name="email" placeholder="Seu melhor e-mail" required>
+                        <button class="btn btn-primary" type="submit">INSCREVER</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<!-- Estilos específicos da newsletter (restaurados inline conforme pedido) -->
+</section>
+<style>
+.newsletter-section { background:#000; }
+.newsletter-section h2 { color: var(--primary-color); }
+.newsletter-section p { color:#fff; }
+.newsletter-section .form-control { background:#111; border:1px solid #333; color:#fff; }
+.newsletter-section .form-control:focus { border-color: var(--primary-color); box-shadow:0 0 0 2px rgba(229,62,62,0.35); }
+.newsletter-section .form-control::placeholder { color:#888; }
+.newsletter-section .btn-primary { background: var(--primary-gradient); border:none; font-weight:600; }
+.newsletter-section .btn-primary:hover { background: linear-gradient(135deg,#ff5555,#a60000); }
+</style>
 
 <!-- Categories Section -->
 <section class="categories-section py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-4 fw-bold mb-3">CATEGORIAS</h2>
+            <h2 class="display-4 fw-bold mb-3 text-primary">CATEGORIAS</h2>
             <p class="text-muted">Explore nossa coleção por categoria</p>
         </div>
         
@@ -131,29 +202,6 @@
                     </div>
                     <h5 class="category-name">VER TODOS</h5>
                 </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Newsletter Section -->
-<section class="newsletter-section py-5 bg-primary text-white">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h2 class="display-5 fw-bold mb-3">FIQUE POR DENTRO</h2>
-                <p class="lead mb-0">
-                    Inscreva-se na nossa newsletter e receba em primeira mão as novidades, 
-                    promoções exclusivas e drops limitados
-                </p>
-            </div>
-            <div class="col-lg-6">
-                <form class="newsletter-form-home" id="newsletterFormHome">
-                    <div class="input-group input-group-lg">
-                        <input type="email" class="form-control" name="email" placeholder="Seu melhor e-mail" required>
-                        <button class="btn btn-dark" type="submit">INSCREVER</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
