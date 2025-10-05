@@ -127,6 +127,57 @@ class Product extends Model
     }
     
     /**
+     * Busca produtos com filtros aplicados
+     */
+    public function getByFilters($filters)
+    {
+        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
+                FROM {$this->table} p 
+                LEFT JOIN categories c ON p.category_id = c.id 
+                WHERE p.active = 1";
+        $params = [];
+
+        if (!empty($filters['category'])) {
+            $sql .= " AND p.category_id = :category";
+            $params[':category'] = $filters['category'];
+        }
+        
+        if (!empty($filters['price_min'])) {
+            $sql .= " AND p.price >= :price_min";
+            $params[':price_min'] = $filters['price_min'];
+        }
+        
+        if (!empty($filters['price_max'])) {
+            $sql .= " AND p.price <= :price_max";
+            $params[':price_max'] = $filters['price_max'];
+        }
+        
+        if (!empty($filters['brand'])) {
+            $sql .= " AND p.brand = :brand";
+            $params[':brand'] = $filters['brand'];
+        }
+        
+        if (!empty($filters['search'])) {
+            $sql .= " AND (p.name LIKE :search OR p.description LIKE :search)";
+            $params[':search'] = "%{$filters['search']}%";
+        }
+
+        $sql .= " ORDER BY p.created_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Alias para findById (compatibilidade)
+     */
+    public function getById($id)
+    {
+        return $this->findById($id);
+    }
+    
+    /**
      * Formata preço
      */
     public static function formatPrice($price)
