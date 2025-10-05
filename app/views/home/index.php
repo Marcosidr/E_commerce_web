@@ -25,14 +25,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Cart notification -->
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
-        <div class="cart-notification bg-dark text-white rounded p-3 d-flex align-items-center gap-2">
-            <i class="fas fa-shopping-cart"></i>
-            <span>0</span>
-        </div>
-    </div>
 </section>
 
 <!-- Featured Products -->

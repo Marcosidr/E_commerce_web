@@ -36,7 +36,7 @@ body {
 /* Header */
 header {
     z-index: 1040;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(184, 40, 40, 0.1);
 }
 
 .navbar-brand {
@@ -48,6 +48,15 @@ header {
 .main-content {
     padding-top: 76px;
 }
+/* logo */
+.logo .urban {
+  color: white;
+}
+
+.logo .street {
+  color: #ff3b3b;
+}
+
 
 /* Hero Section */
 .hero-section {

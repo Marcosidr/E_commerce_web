@@ -29,6 +29,9 @@ $router->add('/^categoria\/camisetas$/', 'Product', 'categoria');
 $router->add('/^categoria\/moletons$/', 'Product', 'categoria');
 $router->add('/^categoria\/calcas$/', 'Product', 'categoria');
 $router->add('/^categoria\/acessorios$/', 'Product', 'categoria');
+$router->add('/^produto\/(?P<id>\d+)$/', 'Product', 'produto');
+$router->add('/^categorias$/', 'Categorias', 'categorias');
+
 
 
 return $router;

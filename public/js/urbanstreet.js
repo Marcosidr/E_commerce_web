@@ -1,42 +1,46 @@
-// URBANSTREET - Custom JavaScript
+// 🏷️ URBANSTREET - JavaScript Personalizado
 
-// Inicialização quando DOM carregado
+// Quando o DOM for completamente carregado, inicializa a aplicação
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
 function initializeApp() {
-    // Inicializar componentes
-    initNavbar();
-    initProductCards();
-    initNewsletter();
-    initCart();
-    initSearch();
-    initAnimations();
+    // Inicializar todos os componentes da página
+    initNavbar();        // Menu de navegação
+    initProductCards();  // Cartões de produtos
+    initNewsletter();    // Newsletter
+    initCart();          // Carrinho
+    initSearch();        // Busca
+    initAnimations();    // Animações de entrada
     
-    console.log('URBANSTREET App initialized');
+    console.log('URBANSTREET App inicializado');
 }
 
-// Navbar functionality
+// =============================
+// NAVBAR (menu de navegação)
+// =============================
 function initNavbar() {
     const navbar = document.querySelector('.navbar');
     
-    // Navbar scroll effect
+    // Adiciona efeito quando o usuário rola a página
     window.addEventListener('scroll', function() {
         if (window.scrollY > 100) {
-            navbar.classList.add('scrolled');
+            navbar.classList.add('scrolled'); // Adiciona classe ao rolar
         } else {
-            navbar.classList.remove('scrolled');
+            navbar.classList.remove('scrolled'); // Remove ao voltar ao topo
         }
     });
 }
 
-// Product cards interactions
+// =============================
+// PRODUTOS (cartões e botões)
+// =============================
 function initProductCards() {
     const productCards = document.querySelectorAll('.product-card');
     
     productCards.forEach(card => {
-        // Hover effects
+        // Efeito de hover (passar o mouse)
         card.addEventListener('mouseenter', function() {
             this.classList.add('hovered');
         });
@@ -46,7 +50,7 @@ function initProductCards() {
         });
     });
     
-    // Add to cart buttons
+    // Botões "Adicionar ao carrinho"
     const addToCartButtons = document.querySelectorAll('.add-to-cart');
     addToCartButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -59,7 +63,9 @@ function initProductCards() {
     });
 }
 
-// Newsletter functionality
+// =============================
+// NEWSLETTER (formulário de e-mail)
+// =============================
 function initNewsletter() {
     const forms = document.querySelectorAll('.newsletter-form, .newsletter-form-home, #newsletterForm, #newsletterFormHome');
     
@@ -71,88 +77,79 @@ function initNewsletter() {
     });
 }
 
+// Envia o formulário de newsletter
 function handleNewsletterSubmit(form) {
     const email = form.querySelector('input[name="email"]').value;
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
     
-    // Validação básica
+    // Validação básica do e-mail
     if (!email || !isValidEmail(email)) {
         showNotification('Por favor, insira um e-mail válido', 'error');
         return;
     }
     
-    // Loading state
+    // Estado de carregamento
     submitBtn.innerHTML = '<span class="spinner"></span> ENVIANDO...';
     submitBtn.disabled = true;
     
-    // Simular envio (substituir por chamada real à API)
+    // Simulação de envio (substituir depois por integração real com backend)
     setTimeout(() => {
-        // Reset button
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
-        
-        // Clear form
         form.reset();
-        
-        // Show success message
         showNotification('Obrigado! Você receberá nossas novidades em primeira mão.', 'success');
     }, 1500);
 }
 
-// Cart functionality
+// =============================
+// CARRINHO
+// =============================
 function initCart() {
-    // Carregar contador do localStorage
+    // Carrega contador salvo no localStorage
     updateCartCount(getCartItemCount());
 }
 
+// Adiciona um produto ao carrinho
 function addToCart(productId, button) {
     const originalContent = button.innerHTML;
     
-    // Loading state
+    // Estado de carregamento no botão
     button.innerHTML = '<span class="spinner"></span>';
     button.disabled = true;
     
-    // Simular adição ao carrinho
+    // Simula a adição ao carrinho
     setTimeout(() => {
-        // Reset button
         button.innerHTML = originalContent;
         button.disabled = false;
         
-        // Atualizar carrinho
         const currentCount = getCartItemCount();
         const newCount = currentCount + 1;
         localStorage.setItem('cart_count', newCount);
         updateCartCount(newCount);
         
-        // Mostrar notificação
         showNotification('Produto adicionado ao carrinho!', 'success');
-        
-        // Animar o carrinho
         animateCartIcon();
-        
     }, 800);
 }
 
+// Atualiza o contador do carrinho no topo
 function updateCartCount(count) {
     const cartBadges = document.querySelectorAll('.badge');
-    const cartNotification = document.querySelector('.cart-notification span');
     
     cartBadges.forEach(badge => {
         if (badge.closest('.btn')) {
             badge.textContent = count;
         }
     });
-    
-    if (cartNotification) {
-        cartNotification.textContent = count;
-    }
 }
 
+// Retorna o total de itens do carrinho
 function getCartItemCount() {
     return parseInt(localStorage.getItem('cart_count') || '0');
 }
 
+// Anima o ícone do carrinho quando um produto é adicionado
 function animateCartIcon() {
     const cartButton = document.querySelector('.btn .fas.fa-shopping-cart');
     if (cartButton) {
@@ -163,7 +160,9 @@ function animateCartIcon() {
     }
 }
 
-// Search functionality
+// =============================
+// BUSCA
+// =============================
 function initSearch() {
     const searchForms = document.querySelectorAll('form[action*="buscar"]');
     
@@ -181,9 +180,10 @@ function initSearch() {
     });
 }
 
-// Animations
+// =============================
+// ANIMAÇÕES (entrada dos elementos)
+// =============================
 function initAnimations() {
-    // Intersection Observer for fade-in animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -198,23 +198,28 @@ function initAnimations() {
         });
     }, observerOptions);
     
-    // Observe elements
+    // Seleciona os elementos que terão animação ao aparecer na tela
     const elementsToAnimate = document.querySelectorAll('.product-card, .category-card, .hero-content');
     elementsToAnimate.forEach(el => observer.observe(el));
 }
 
-// Utility functions
+// =============================
+// FUNÇÕES AUXILIARES
+// =============================
+
+// Validação de e-mail
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
 
+// Exibe uma notificação na tela (alerta Bootstrap)
 function showNotification(message, type = 'info') {
-    // Remove existing notifications
+    // Remove notificações anteriores
     const existing = document.querySelectorAll('.notification');
     existing.forEach(n => n.remove());
     
-    // Create notification
+    // Cria o elemento da notificação
     const notification = document.createElement('div');
     notification.className = `notification alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
     notification.style.cssText = `
@@ -232,7 +237,7 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Auto remove after 5 seconds
+    // Remove automaticamente após 5 segundos
     setTimeout(() => {
         if (notification.parentNode) {
             notification.remove();
@@ -240,6 +245,7 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
+// Formata valores em reais (R$)
 function formatCurrency(amount) {
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
@@ -247,7 +253,9 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
-// Smooth scrolling for anchor links
+// =============================
+// SCROLL SUAVE (ancoras)
+// =============================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
@@ -261,7 +269,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Lazy loading for images
+// =============================
+// LAZY LOADING (carregamento de imagens)
+// =============================
 if ('IntersectionObserver' in window) {
     const imageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
@@ -281,7 +291,9 @@ if ('IntersectionObserver' in window) {
     });
 }
 
-// Console styling
+// =============================
+// LOG NO CONSOLE
+// =============================
 console.log(
     '%c🏷️ URBANSTREET %c- Estilo Urbano Autêntico', 
     'background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
