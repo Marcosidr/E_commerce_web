@@ -69,7 +69,11 @@
 <section class="featured-section py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-4 fw-bold mb-3">DESTAQUES DA SEMANA</h2>
+            <h2 class="display-4 fw-bold mb-3">
+                <span style="color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.25);">DESTAQUES</span>
+                <span style="color: #E53E3E; text-shadow: 0 2px 12px rgba(0,0,0,0.15);">DA</span>
+                <span style="color: #E53E3E; text-shadow: 0 2px 12px rgba(0,0,0,0.15);">SEMANA</span>
+            </h2>
             <p class="text-muted">Os produtos mais desejados da nossa coleção</p>
         </div>
         
@@ -133,7 +137,7 @@
             </div>
         </div>
     </div>
-<!-- Estilos específicos da newsletter (restaurados inline conforme pedido) -->
+<!-- Estilos específicos da newsletter -->
 </section>
 <style>
 .newsletter-section { background:#000; }
@@ -145,64 +149,95 @@
 .newsletter-section .btn-primary { background: var(--primary-gradient); border:none; font-weight:600; }
 .newsletter-section .btn-primary:hover { background: linear-gradient(135deg,#ff5555,#a60000); }
 </style>
-
 <!-- Categories Section -->
-<section class="categories-section py-5 bg-light">
+<section class="categories-section py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-4 fw-bold mb-3 text-primary">CATEGORIAS</h2>
-            <p class="text-muted">Explore nossa coleção por categoria</p>
+            <h2 class="display-4 fw-black">EXPLORE NOSSAS <span class="text-primary">CATEGORIAS</span></h2>
+            <p class="text-muted">Acesso rápido aos estilos que definem a rua.</p>
         </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-2 col-md-4 col-6">
-                <a href="<?= BASE_URL ?>/categoria/tenis" class="category-card text-decoration-none">
-                    <div class="category-icon mb-3">
-                        <i class="fas fa-shoe-prints fa-3x text-primary"></i>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+
+            <!-- CARD DE CATEGORIA 1: TÊNIS -->
+            <div class="col">
+                <a href="<?= BASE_URL ?>/categoria/tenis" class="product-card text-decoration-none">
+                    <div class="product-image">
+                        <img src="<?= BASE_URL ?>/images/categories/b1.png"
+                             alt="Categoria Tênis"
+                             class="img-fluid"
+                             onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A1A1A/E53E3E?text=T%C3%8ANIS';"
+                        >
                     </div>
-                    <h5 class="category-name">TÊNIS</h5>
+                    <div class="product-info text-center py-3 px-2">
+                        <h5 class="product-title m-0" style="color: #fff;">TÊNIS STREET</h5>
+                    </div>
                 </a>
             </div>
-            <div class="col-lg-2 col-md-4 col-6">
-                <a href="<?= BASE_URL ?>/categoria/camisetas" class="category-card text-decoration-none">
-                    <div class="category-icon mb-3">
-                        <i class="fas fa-tshirt fa-3x text-primary"></i>
+
+            <!-- CARD DE CATEGORIA 2: CAMISETAS -->
+            <div class="col">
+                <a href="<?= BASE_URL ?>/categoria/camisetas" class="product-card text-decoration-none">
+                    <div class="product-image">
+                        <img src="<?= BASE_URL ?>/images/categories/b2.png"
+                             alt="Categoria Camisetas"
+                             class="img-fluid"
+                             onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A1A1A/FFC107?text=CAMISETAS';"
+                        >
                     </div>
-                    <h5 class="category-name">CAMISETAS</h5>
+                    <div class="product-info text-center py-3 px-2">
+                        <h5 class="product-title m-0" style="color: #fff;">CAMISETAS</h5>
+                    </div>
                 </a>
             </div>
-            <div class="col-lg-2 col-md-4 col-6">
-                <a href="<?= BASE_URL ?>/categoria/moletons" class="category-card text-decoration-none">
-                    <div class="category-icon mb-3">
-                        <i class="fas fa-hoodie fa-3x text-primary"></i>
+
+            <!-- CARD DE CATEGORIA 3: MOLETONS -->
+            <div class="col">
+                <a href="<?= BASE_URL ?>/categoria/moletons" class="product-card text-decoration-none">
+                    <div class="product-image">
+                        <img src="<?= BASE_URL ?>/images/categories/b3.png"
+                             alt="Categoria Moletons"
+                             class="img-fluid"
+                             onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A1A1A/00B894?text=MOLETONS';"
+                        >
                     </div>
-                    <h5 class="category-name">MOLETONS</h5>
+                    <div class="product-info text-center py-3 px-2">
+                        <h5 class="product-title m-0" style="color: #fff;">MOLETONS</h5>
+                    </div>
                 </a>
             </div>
-            <div class="col-lg-2 col-md-4 col-6">
-                <a href="<?= BASE_URL ?>/categoria/calcas" class="category-card text-decoration-none">
-                    <div class="category-icon mb-3">
-                        <i class="fas fa-jeans fa-3x text-primary"></i>
+
+            <!-- CARD DE CATEGORIA 4: CALÇA -->
+            <div class="col">
+                <a href="<?= BASE_URL ?>/categoria/calca" class="product-card text-decoration-none">
+                    <div class="product-image">
+                        <img src="<?= BASE_URL ?>/images/categories/b4.png"
+                             alt="Categoria Calça"
+                             class="img-fluid"
+                             onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A1A1A/6C757D?text=CAL%C3%87A';"
+                        >
                     </div>
-                    <h5 class="category-name">CALÇAS</h5>
+                    <div class="product-info text-center py-3 px-2">
+                        <h5 class="product-title m-0" style="color: #fff;">CALÇA</h5>
+                    </div>
                 </a>
             </div>
-            <div class="col-lg-2 col-md-4 col-6">
-                <a href="<?= BASE_URL ?>/categoria/acessorios" class="category-card text-decoration-none">
-                    <div class="category-icon mb-3">
-                        <i class="fas fa-hat-cowboy fa-3x text-primary"></i>
+
+            <!-- CARD DE CATEGORIA 5: CATÁLOGO COMPLETO -->
+            <div class="col">
+                <a href="<?= BASE_URL ?>/catalogo" class="product-card text-decoration-none card-all">
+                    <div class="product-image">
+                        <img src="<?= BASE_URL ?>/images/categories/b5.png"
+                             alt="Catálogo Completo"
+                             class="img-fluid"
+                             onerror="this.onerror=null;this.src='https://placehold.co/600x600/1A1A1A/007BFF?text=CAT%C3%81LOGO';"
+                        >
                     </div>
-                    <h5 class="category-name">ACESSÓRIOS</h5>
+                    <div class="product-info text-center py-3 px-2">
+                        <h5 class="product-title m-0" style="color: #fff;">CATÁLOGO COMPLETO</h5>
+                    </div>
                 </a>
             </div>
-            <div class="col-lg-2 col-md-4 col-6">
-                <a href="<?= BASE_URL ?>/catalogo" class="category-card text-decoration-none">
-                    <div class="category-icon mb-3">
-                        <i class="fas fa-th fa-3x text-primary"></i>
-                    </div>
-                    <h5 class="category-name">VER TODOS</h5>
-                </a>
-            </div>
+
         </div>
     </div>
 </section>
