@@ -296,6 +296,6 @@ if ('IntersectionObserver' in window) {
 // =============================
 console.log(
     '%c🏷️ URBANSTREET %c- Estilo Urbano Autêntico', 
-    'background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
+    'background: #ff3b3b; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
     'color: #666; font-style: italic;'
 );

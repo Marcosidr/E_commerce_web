@@ -1,7 +1,7 @@
 /* URBANSTREET - Custom CSS */
 
 :root {
-    --primary-color: #007bff;
+    --primary-color: #ff3b3b;
     --secondary-color: #6c757d;
     --dark-color: #212529;
     --light-color: #f8f9fa;
@@ -31,6 +31,10 @@ body {
 .display-2 {
     line-height: 0.9;
     letter-spacing: -0.02em;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
 }
 
 /* Header */
@@ -187,7 +191,7 @@ header {
 
 /* Newsletter */
 .newsletter-section {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, #ff3b3b 100%);
 }
 
 .newsletter-form .form-control {
@@ -218,10 +222,10 @@ header {
 }
 
 .btn-primary:hover {
-    background: #0056b3;
-    border-color: #0056b3;
+    background: #d32f2f;
+    border-color: #d32f2f;
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+    box-shadow: 0 4px 15px rgba(255,59,59,0.3);
 }
 
 .btn-lg {
@@ -305,7 +309,7 @@ header {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #0056b3;
+    background: #d32f2f;
 }
 
 /* Loading States */
