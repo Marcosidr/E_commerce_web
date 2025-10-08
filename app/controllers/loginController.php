@@ -1,59 +1,69 @@
 <?php
-    require '../config/connection.php';
-    require '../views/Painel/Users.php';
+namespace App\Controllers;
 
-    class loginController {
-        private $users;
-       
+use App\Core\Controller;
+use App\Models\Users;
 
-        public function __construct() {
+require_once CONFIG_PATH . '/connection.php';
 
-        $connection = new Connection();
+class LoginController extends Controller
+{
+    private $users;
+
+    public function __construct()
+    {
+        $connection = new \Connection();
         $pdo = $connection->conect();
+    $this->users = new Users($pdo);
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
+    }
 
-        $this->users = new Users($pdo);
+    /**
+     * Exibe o formulário de login (rota /login)
+     */
+    public function login()
+    {
+        $this->loadView('Painel/login', [
+            'title' => 'Login - URBANSTREET',
+            'metaDescription' => 'Entre na sua conta URBANSTREET',
+            'pageClass' => 'login-page'
+        ]);
+    }
 
+    /**
+     * Processa submissão de login (POST)
+     */
+    public function verify()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/login');
+            return;
         }
 
-        public function verify($data){
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
 
-        $email = $data['email'] ?? NULL;
-        $password = $data['password'] ?? NULL;
-
-        if(!filter_var($email, FILTER_VALIDATE_EMAIL))
-        {
-            echo "<script>mensagem('Digite um email válido', 'error', '')</script>";
+        // Validações básicas
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo "<script>mensagem('Digite um email válido','error','');history.back();</script>"; return;
         }
-        else if (empty("$password"))
-        {
-            echo "<script>mensagem('Senha inválida','error','')</script>";
-                exit;
+        if ($password === '') {
+            echo "<script>mensagem('Senha obrigatória','error','');history.back();</script>"; return;
         }
-        
 
-        $dataUsers = $this->users->getEmailUsers($email);
+    $dataUsers = $this->users->getByEmail($email);
+        if (!$dataUsers || empty($dataUsers->id)) {
+            echo "<script>mensagem('Usuário inválido','error','');history.back();</script>"; return;
+        }
+        if (!password_verify($password, $dataUsers->password)) {
+            echo "<script>mensagem('Senha inválida','error','');history.back();</script>"; return;
+        }
 
-        print_r($dataUsers);
-
-        if (empty($dataUsers->id))
-                { echo "<script>mensagem('Usuário inválido', 'error', '')</script>";
-                    exit;
-                    
-                }else if (!password_verify($password,$dataUsers->password))
-                {
-                    echo "<script>mensagem('Senha inválida, 'error', '')</script>";
-                    exit;
-                }else {
-                    $_SESSION["users"] = array(
-                        "id" => $dataUsers->id,
-                        "nome" => $dataUsers->name
-                    );
-
-                    echo "<script>location.href = 'index.php'</script>";
-                    exit;   
-                }
-
-
-
+        // Sucesso
+        $_SESSION['users'] = [
+            'id' => $dataUsers->id,
+            'nome' => $dataUsers->name
+        ];
+        echo "<script>location.href='" . BASE_URL . "';</script>"; // redireciona para home
     }
 }

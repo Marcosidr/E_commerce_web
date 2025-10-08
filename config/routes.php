@@ -31,7 +31,8 @@ $router->add('/^categoria\/calcas$/', 'Product', 'categoria');
 $router->add('/^categoria\/acessorios$/', 'Product', 'categoria');
 $router->add('/^produto\/(?P<id>\d+)$/', 'Product', 'produto');
 $router->add('/^categorias$/', 'Categorias', 'categorias');
-
+$router->add('/^login$/', 'Login', 'login');
+$router->add('/^login\/verify$/', 'Login', 'verify');
 
 
 return $router;

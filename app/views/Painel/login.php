@@ -147,22 +147,22 @@
   <div class="card-form text-center">
     <h2 class="mb-4">Entre na sua conta</h2>
 
-    <form>
+  <form method="POST" action="<?= BASE_URL ?>/login/verify">
       <div class="mb-3 text-start">
         <label for="email" class="form-label">E-mail</label>
-        <input type="email" id="email" class="form-control" placeholder="Digite seu e-mail" required class="form-control" data-parsley-required-message="Preencha esse campo" data-parsley-type-message="Digite um e-mail válido">
+  <input type="email" id="email" name="email" class="form-control" placeholder="Digite seu e-mail" required data-parsley-required-message="Preencha esse campo" data-parsley-type-message="Digite um e-mail válido">
       </div>
 
       <div class="mb-3 text-start position-relative">
-        <label for="senha" class="form-label">Senha</label>
-        <input type="password" id="senha" class="form-control" placeholder="Digite sua senha required class="form-control" data-parsley-required-message="Preencha esse campo" data-parsley-errors-container="#error">
+  <label for="senha" class="form-label">Senha</label>
+  <input type="password" id="senha" name="password" class="form-control" placeholder="Digite sua senha" required data-parsley-required-message="Preencha esse campo" data-parsley-errors-container="#error">
         <span class="toggle-password" onclick="mostrarSenha()">
         👁️
         </span>
       </div>
 
       <div class="form-check text-start mb-3">
-        <input type="checkbox" id="remember" class="form-check-input">
+  <input type="checkbox" id="remember" name="remember" class="form-check-input">
         <label for="remember" class="form-check-label">Lembrar-me</label>
       </div>
 

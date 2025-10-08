@@ -1,4 +1,6 @@
-<?php 
+<?php
+require_once 'vendor/autoload.php';
+use \PDO;
 
 class Users {
     private $pdo;
