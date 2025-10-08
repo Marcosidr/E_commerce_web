@@ -150,12 +150,12 @@
     <form>
       <div class="mb-3 text-start">
         <label for="email" class="form-label">E-mail</label>
-        <input type="email" id="email" class="form-control" placeholder="Digite seu e-mail">
+        <input type="email" id="email" class="form-control" placeholder="Digite seu e-mail" required class="form-control" data-parsley-required-message="Preencha esse campo" data-parsley-type-message="Digite um e-mail válido">
       </div>
 
       <div class="mb-3 text-start position-relative">
         <label for="senha" class="form-label">Senha</label>
-        <input type="password" id="senha" class="form-control" placeholder="Digite sua senha">
+        <input type="password" id="senha" class="form-control" placeholder="Digite sua senha required class="form-control" data-parsley-required-message="Preencha esse campo" data-parsley-errors-container="#error">
         <span class="toggle-password" onclick="mostrarSenha()">
         👁️
         </span>

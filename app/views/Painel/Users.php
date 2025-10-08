@@ -14,7 +14,7 @@ class Users {
 
             $consult = $this->pdo->prepare($sql);
             $consult->bindParam(':email', $email);
-            $consult->esecute();
+            $consult->execute();
 
             return $consult->fetch(PDO::FETCH_OBJ);
     }

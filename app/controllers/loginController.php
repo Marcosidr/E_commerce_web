@@ -1,10 +1,10 @@
 <?php
     require '../config/connection.php';
-    require '../config/Users.php';
+    require '../views/Painel/Users.php';
 
-    class IndexController {
+    class loginController {
         private $users;
-        private $password;
+       
 
         public function __construct() {
 
@@ -17,14 +17,14 @@
 
         public function verify($data){
 
-        $email = $dados['email'] ?? NULL;
-        $password = $dados['password'] ?? NULL;
+        $email = $data['email'] ?? NULL;
+        $password = $data['password'] ?? NULL;
 
         if(!filter_var($email, FILTER_VALIDATE_EMAIL))
         {
-            echo "<script>mensagem('Digite um email válido', 'error', '')<script>";
+            echo "<script>mensagem('Digite um email válido', 'error', '')</script>";
         }
-        else if (empty("password"))
+        else if (empty("$password"))
         {
             echo "<script>mensagem('Senha inválida','error','')</script>";
                 exit;

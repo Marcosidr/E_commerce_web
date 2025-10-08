@@ -11,11 +11,11 @@
 
         public static function conect() {
             try {
-                return new PDO("mysql:host=".self::$host.";
-                dbname=".self::$dbname.";
-                charset=utf8",
-                self::$user,
-                self::$pass);
+                return new PDO(
+                    "mysql:host=" . self::$host . ";dbname=" . self::$dbname . ";charset=utf8",
+                    self::$user,
+                    self::$pass
+);
         } 
 
             catch(PDOException $e) {
