@@ -646,10 +646,14 @@ header, .navbar, header.navbar-dark {
     font-size: .9rem;
 }
 
+
+
 /* ===== Responsividade ===== */
 @media (max-width: 640px) {
     .contact-page .contact-grid {
         gap: 2rem;
     }
 }
+
+
 
