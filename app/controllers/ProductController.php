@@ -26,23 +26,26 @@ class ProductController extends Controller
      */
     public function catalogo()
     {
-        $page = (int)($_GET['page'] ?? 1);
-        $limit = 12;
-        $offset = ($page - 1) * $limit;
-        
-        $products = $this->productModel->getActive($limit, $offset);
-        $totalProducts = $this->productModel->countActive();
-        $totalPages = ceil($totalProducts / $limit);
-        
+        // Filtros via query string
+        $filters = [
+            'category'  => $_GET['category'] ?? null,
+            'brand'     => $_GET['brand'] ?? null,
+            'price_min' => isset($_GET['min']) ? (float)$_GET['min'] : null,
+            'price_max' => isset($_GET['max']) ? (float)$_GET['max'] : null,
+            'sort'      => $_GET['sort'] ?? 'recent'
+        ];
+
+        $products   = $this->productModel->getByFilters($filters);
         $categories = $this->categoryModel->getAllActive();
+        $brands     = $this->productModel->getDistinctBrands();
         
         $this->loadView('products/catalogo', [
             'title' => 'Catálogo - URBANSTREET',
             'metaDescription' => 'Explore nossa coleção completa de streetwear. Tênis, camisetas, moletons e muito mais.',
             'products' => $products,
             'categories' => $categories,
-            'currentPage' => $page,
-            'totalPages' => $totalPages,
+            'brands' => $brands,
+            'filters' => $filters,
             'pageClass' => 'catalog-page'
         ]);
     }

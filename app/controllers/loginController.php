@@ -23,7 +23,7 @@ class LoginController extends Controller
      */
     public function login()
     {
-        $this->loadView('Painel/login', [
+        $this->loadPartial('Painel/login', [
             'title' => 'Login - URBANSTREET',
             'metaDescription' => 'Entre na sua conta URBANSTREET',
             'pageClass' => 'login-page'

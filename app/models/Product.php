@@ -162,11 +162,35 @@ class Product extends Model
             $params[':search'] = "%{$filters['search']}%";
         }
 
-        $sql .= " ORDER BY p.created_at DESC";
+        // Ordenação
+        if (!empty($filters['sort'])) {
+            switch ($filters['sort']) {
+                case 'price_asc':
+                    $sql .= " ORDER BY p.price ASC"; break;
+                case 'price_desc':
+                    $sql .= " ORDER BY p.price DESC"; break;
+                default:
+                    $sql .= " ORDER BY p.created_at DESC"; break;
+            }
+        } else {
+            $sql .= " ORDER BY p.created_at DESC";
+        }
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Retorna lista de marcas distintas
+     */
+    public function getDistinctBrands(): array
+    {
+        $sql = "SELECT DISTINCT brand FROM {$this->table} 
+                WHERE brand IS NOT NULL AND brand <> '' 
+                ORDER BY brand ASC";
+        $stmt = $this->db->query($sql);
+        return array_map(function($row){ return $row['brand']; }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
     
     /**

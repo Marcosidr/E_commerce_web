@@ -1,8 +1,4 @@
-/* ===========================================================
-   URBANSTREET - CSS Refinado (Visual Premium)
-   Mantida a estrutura original — apenas aprimorado o estilo.
-   Efeitos de luz, sombras e transições mais elegantes.
-=========================================================== */
+
 
 :root {
     --primary-color: #e53e3e;     /* Vermelho principal */
@@ -343,6 +339,252 @@ header, .navbar, header.navbar-dark {
     transform:translateY(-2px);
 }
 .btn-lg { padding:1rem 2rem; font-size:1rem; }
+
+/* ============================================
+     LOGIN PAGE — URBANSTREET STYLE (Dark Premium)
+     ============================================ */
+body.login-page {
+    background: radial-gradient(circle at top right, #111 0%, #000 70%);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* ===== CARD ===== */
+.login-page .card-form {
+    background: linear-gradient(160deg, #0c0c0c, #171717);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    color: #fff;
+    animation: fadeInUp 0.8s ease;
+    position: relative; /* importante para posicionar o botão voltar */
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== LOGO ===== */
+.login-page .logo .urban { color: #fff; font-weight: 800; }
+.login-page .logo .street {
+    background: linear-gradient(90deg, #e63946, #ff4b5c);
+    background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+.login-page .logo:hover .street { background: none; color: #fff; }
+
+/* ===== BOTÃO VOLTAR ===== */
+.login-page .btn-back {
+    position: absolute;
+    top: 1rem;
+    left: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #ccc;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: 0.25s ease;
+    z-index: 5;
+}
+.login-page .btn-back:hover { color: #e63946; transform: translateX(-3px); }
+
+/* ===== TÍTULOS ===== */
+.login-page h2 { font-weight: 800; color: #fff; }
+.login-page p { color: #bbb; }
+
+/* ===== INPUTS ===== */
+.login-page .form-control {
+    background: #0f0f0f; color: #fff; border: 1px solid #2a2a2a;
+    border-radius: 10px; padding: 12px 48px; transition: 0.25s;
+}
+.login-page .form-control:focus {
+    background: #111; border-color: #e63946; box-shadow: 0 0 10px rgba(230, 57, 70, 0.4); color: #fff;
+}
+.login-page .form-control::placeholder { color: #888; }
+
+/* Ícone do input (e-mail / senha) */
+.login-page .input-icon {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    color: #888; pointer-events: none;
+}
+
+/* ===== BOTÃO OLHO ===== */
+.login-page .toggle-password {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    border: none; background: transparent; color: #888; cursor: pointer; transition: 0.25s; padding: 4px; border-radius: 50%;
+}
+.login-page .toggle-password:hover { color: #e63946; background: rgba(255, 255, 255, 0.05); }
+
+/* ===== BOTÃO ENTRAR ===== */
+.login-page .btn-primary {
+    background: linear-gradient(90deg, #e63946, #ff4b5c);
+    border: none; color: #fff; font-weight: 700; letter-spacing: 0.5px;
+    border-radius: 10px; transition: 0.3s ease; box-shadow: 0 0 15px rgba(230, 57, 70, 0.4);
+}
+.login-page .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(230, 57, 70, 0.6); }
+.login-page .btn-primary:active { filter: brightness(0.9); transform: translateY(0); }
+
+/* ===== LINKS E DIVISOR ===== */
+.login-page a.text-link { color: #ff4b5c; transition: color 0.25s ease; }
+.login-page a.text-link:hover { color: #e63946; }
+.login-page .divider { display: flex; align-items: center; color: #999; margin: 1.5rem 0; }
+.login-page .divider::before, .login-page .divider::after { content: ""; flex: 1; border-bottom: 1px solid #333; }
+.login-page .divider:not(:empty)::before { margin-right: 0.75em; }
+.login-page .divider:not(:empty)::after { margin-left: 0.75em; }
+
+/* ===== CHECKBOX ===== */
+.login-page .form-check-label { color: #ccc; font-size: 0.9rem; }
+.login-page .form-check-input:checked { background-color: #e63946; border-color: #e63946; }
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 576px) {
+    .login-page .card-form { padding: 2rem 1.5rem; }
+    .login-page .btn-primary { font-size: 1rem; padding: 0.75rem; }
+    .login-page h2 { font-size: 1.3rem; }
+}
+
+/* ============================================
+     CATÁLOGO URBANSTREET – VISUAL PREMIUM DARK
+     ============================================ */
+.catalog-page {
+    background-color: #0d0d0d;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    padding-top: 2rem;
+}
+
+.catalog-page h1 {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: linear-gradient(90deg, #e63946, #ff6b6b);
+    background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+/* Barra de ordenação */
+.catalog-page form select,
+.catalog-page form button {
+    border-radius: 6px;
+}
+.catalog-page form select {
+    background-color: #111;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+}
+.catalog-page form select:focus {
+    border-color: #e63946;
+    box-shadow: 0 0 6px rgba(230,57,70,0.4);
+}
+.catalog-page form button {
+    background: linear-gradient(90deg, #e63946, #ff3b3b);
+    border: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+.catalog-page form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(230,57,70,0.5);
+}
+
+/* Filtros laterais */
+.catalog-page aside form {
+    background: rgba(17, 17, 17, 0.85);
+    border: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(6px);
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.catalog-page aside h2 {
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: #fff;
+}
+.catalog-page aside label {
+    font-size: 0.9rem;
+    color: #ccc;
+    cursor: pointer;
+}
+.catalog-page aside input[type="radio"]:checked + span {
+    color: #e63946;
+    font-weight: 600;
+}
+.catalog-page aside .btn-outline-light {
+    border-color: #444;
+    color: #fff;
+}
+.catalog-page aside .btn-outline-light:hover {
+    background-color: #e63946;
+    border-color: #e63946;
+}
+
+/* Cards de produtos */
+.catalog-page .product-card {
+    background: #111;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.catalog-page .product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(230,57,70,0.25);
+}
+
+/* Imagem */
+.catalog-page .product-image img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.4s ease;
+}
+.catalog-page .product-card:hover .product-image img {
+    transform: scale(1.06);
+}
+.catalog-page .product-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.3s ease;
+}
+.catalog-page .product-card:hover .product-overlay { opacity: 1; }
+.catalog-page .product-overlay .btn { border: none; border-radius: 8px; }
+
+/* Informações */
+.catalog-page .product-info { padding: 1.25rem; text-align: center; }
+.catalog-page .product-title { font-weight: 600; font-size: 1rem; color: #f5f5f5; }
+.catalog-page .product-price { font-weight: 700; font-size: 1.1rem; color: #e63946; }
+
+/* Placeholder de produto vazio */
+.catalog-page .no-results { text-align: center; color: #aaa; margin-top: 4rem; }
+
+/* Animações sutis */
+@keyframes fadeInUp {
+    from {opacity:0; transform: translateY(20px);} to {opacity:1; transform: translateY(0);} }
+.catalog-page .product-card, .catalog-page aside form { animation: fadeInUp 0.6s ease forwards; }
+
+/* Scrollbar custom */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #e63946, #ff4b4b); border-radius: 8px; }
+::-webkit-scrollbar-track { background: #0d0d0d; }
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .catalog-page h1 { font-size: 1.8rem; text-align: center; }
+    .catalog-page aside { margin-bottom: 2rem; }
+}
 
 /* Badges */
 .badge.bg-primary, .badge.text-bg-primary {
