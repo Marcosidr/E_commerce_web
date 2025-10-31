@@ -80,27 +80,6 @@ class ProductController extends Controller
     }
     
     /**
-     * Busca de produtos
-     */
-    public function buscar()
-    {
-        $query = trim($_GET['q'] ?? '');
-        $products = [];
-        
-        if (!empty($query)) {
-            $products = $this->productModel->search($query);
-        }
-        
-        $this->loadView('products/buscar', [
-            'title' => 'Busca: ' . $query . ' - URBANSTREET',
-            'metaDescription' => 'Resultados da busca por: ' . $query,
-            'query' => $query,
-            'products' => $products,
-            'pageClass' => 'search-page'
-        ]);
-    }
-    
-    /**
      * Redireciona URLs antigas de categoria para o catálogo com filtro
      */
     public function redirectToCategory($categorySlug = null)

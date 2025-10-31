@@ -20,7 +20,6 @@ $router->add('/^newsletter$/', 'Home', 'newsletter');
 // Catálogo e produtos
 $router->add('/^catalogo$/', 'Product', 'catalogo');
 $router->add('/^produto\/(?P<id>\d+)$/', 'Product', 'produto');
-$router->add('/^buscar$/', 'Product', 'buscar');
 
 // Redirecionamentos para catálogo com filtros (compatibilidade)
 $router->add('/^categoria\/(?P<category_slug>[a-z0-9-]+)$/', 'Product', 'redirectToCategory');
