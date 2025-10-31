@@ -1,0 +1,20 @@
+<!-- Moletom Street Hood - Produto ID 3 -->
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#1a1a1a"/>
+  <g fill="#333">
+    <!-- Moletom com capuz -->
+    <path d="M100 200 Q120 180 140 200 L260 200 Q280 180 300 200 L300 340 L100 340 Z" fill="#2a2a2a"/>
+    <!-- Capuz -->
+    <path d="M140 200 Q150 160 170 150 Q200 140 230 150 Q250 160 260 200" fill="#2a2a2a"/>
+    <!-- Cordões -->
+    <circle cx="190" cy="210" r="3" fill="#666"/>
+    <circle cx="210" cy="210" r="3" fill="#666"/>
+    <line x1="190" y1="210" x2="185" y2="250" stroke="#666" stroke-width="2"/>
+    <line x1="210" y1="210" x2="215" y2="250" stroke="#666" stroke-width="2"/>
+    <!-- Bolso -->
+    <path d="M150 280 Q200 270 250 280 Q250 310 200 320 Q150 310 150 280" fill="#1a1a1a"/>
+  </g>
+  <text x="50%" y="380" text-anchor="middle" fill="#e63946" font-family="Arial, sans-serif" font-size="16" font-weight="bold">
+    STREET HOOD
+  </text>
+</svg>

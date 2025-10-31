@@ -1,0 +1,12 @@
+<!-- SVG Placeholder para produtos sem imagem -->
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sem imagem disponível">
+  <rect width="100%" height="100%" fill="#0d0d0d"/>
+  <g fill="#333">
+    <rect x="120" y="150" width="160" height="100" rx="8"/>
+    <path d="M140 170h120v20H140zm0 30h80v20H140z"/>
+    <circle cx="180" cy="180" r="15" fill="#e63946"/>
+  </g>
+  <text x="50%" y="320" text-anchor="middle" fill="#666" font-family="Arial, sans-serif" font-size="14">
+    URBANSTREET
+  </text>
+</svg>

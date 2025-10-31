@@ -1,4 +1,4 @@
-<?php ob_start(); ?>
+
 
 <section class="py-5">
   <div class="container">
@@ -88,7 +88,7 @@
               <div class="col-12 col-sm-6 col-lg-4">
                 <div class="product-card h-100">
                   <div class="product-image position-relative">
-                    <img src="<?= $product['image'] ?? BASE_URL . '/images/no-image.jpg' ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="img-fluid">
+                    <img src="<?= getProductImageUrl($product['id']) ?>" alt="<?= sanitizeString($product['name']) ?>" class="img-fluid">
                     <div class="product-badge">
                       <span class="badge bg-secondary"><?= strtoupper($product['category_name'] ?? 'URBAN STYLE') ?></span>
                     </div>
@@ -102,8 +102,8 @@
                     </div>
                   </div>
                   <div class="product-info p-3">
-                    <h5 class="product-title mb-2"><?= htmlspecialchars($product['name']) ?></h5>
-                    <p class="product-price h5 text-primary mb-0"><?= App\Models\Product::formatPrice($product['price']) ?></p>
+                    <h5 class="product-title mb-2"><?= sanitizeString($product['name']) ?></h5>
+                    <p class="product-price h5 text-primary mb-0"><?= formatPrice($product['price']) ?></p>
                   </div>
                 </div>
               </div>
@@ -115,5 +115,4 @@
   </div>
 </section>
 
-<?php $content = ob_get_clean(); ?>
-<?php require_once APP_PATH . '/views/layouts/main.php'; ?>
+

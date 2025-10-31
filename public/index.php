@@ -19,6 +19,9 @@ define('CONFIG_PATH', ROOT_PATH . '/config');
 define('PUBLIC_PATH', ROOT_PATH . '/public');
 define('BASE_URL', 'http://localhost/E-comerce/public');
 
+// Carrega funções helper
+require_once APP_PATH . '/helpers/functions.php';
+
 
 try {
     // Carrega as rotas
