@@ -131,6 +131,11 @@ class Product extends Model
      */
     public function getByFilters($filters)
     {
+        // Se há busca, usar método de busca separado
+        if (!empty($filters['search'])) {
+            return $this->searchWithFilters($filters);
+        }
+        
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
                 FROM {$this->table} p 
                 LEFT JOIN categories c ON p.category_id = c.id 
@@ -139,43 +144,85 @@ class Product extends Model
 
         if (!empty($filters['category'])) {
             $sql .= " AND p.category_id = :category";
-            $params[':category'] = $filters['category'];
+            $params['category'] = $filters['category'];
         }
         
         if (!empty($filters['price_min'])) {
             $sql .= " AND p.price >= :price_min";
-            $params[':price_min'] = $filters['price_min'];
+            $params['price_min'] = $filters['price_min'];
         }
         
         if (!empty($filters['price_max'])) {
             $sql .= " AND p.price <= :price_max";
-            $params[':price_max'] = $filters['price_max'];
+            $params['price_max'] = $filters['price_max'];
         }
         
         if (!empty($filters['brand'])) {
             $sql .= " AND p.brand = :brand";
-            $params[':brand'] = $filters['brand'];
-        }
-        
-        if (!empty($filters['search'])) {
-            $sql .= " AND (p.name LIKE :search OR p.description LIKE :search)";
-            $params[':search'] = "%{$filters['search']}%";
+            $params['brand'] = $filters['brand'];
         }
 
         // Ordenação
-        if (!empty($filters['sort'])) {
-            switch ($filters['sort']) {
-                case 'price_asc':
-                    $sql .= " ORDER BY p.price ASC"; break;
-                case 'price_desc':
-                    $sql .= " ORDER BY p.price DESC"; break;
-                default:
-                    $sql .= " ORDER BY p.created_at DESC"; break;
-            }
-        } else {
-            $sql .= " ORDER BY p.created_at DESC";
+        switch ($filters['sort'] ?? 'recent') {
+            case 'price_asc':
+                $sql .= " ORDER BY p.price ASC"; break;
+            case 'price_desc':
+                $sql .= " ORDER BY p.price DESC"; break;
+            default:
+                $sql .= " ORDER BY p.created_at DESC"; break;
         }
 
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Busca produtos com termo de pesquisa e filtros
+     */
+    private function searchWithFilters($filters)
+    {
+        $searchTerm = "%{$filters['search']}%";
+        
+        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
+                FROM {$this->table} p 
+                LEFT JOIN categories c ON p.category_id = c.id 
+                WHERE p.active = 1 
+                AND (p.name LIKE ? OR p.description LIKE ?)";
+        
+        $params = [$searchTerm, $searchTerm];
+        
+        // Adicionar outros filtros se necessário
+        if (!empty($filters['category'])) {
+            $sql .= " AND p.category_id = ?";
+            $params[] = $filters['category'];
+        }
+        
+        if (!empty($filters['brand'])) {
+            $sql .= " AND p.brand = ?";
+            $params[] = $filters['brand'];
+        }
+        
+        if (!empty($filters['price_min'])) {
+            $sql .= " AND p.price >= ?";
+            $params[] = $filters['price_min'];
+        }
+        
+        if (!empty($filters['price_max'])) {
+            $sql .= " AND p.price <= ?";
+            $params[] = $filters['price_max'];
+        }
+        
+        // Ordenação
+        switch ($filters['sort'] ?? 'recent') {
+            case 'price_asc':
+                $sql .= " ORDER BY p.price ASC"; break;
+            case 'price_desc':
+                $sql .= " ORDER BY p.price DESC"; break;
+            default:
+                $sql .= " ORDER BY p.created_at DESC"; break;
+        }
+        
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
