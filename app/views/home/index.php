@@ -56,7 +56,7 @@
                     </p>
                     <div class="d-flex flex-wrap gap-3">
                         <a href="<?= BASE_URL ?>/catalogo" class="btn btn-primary btn-lg px-4 shadow-sm">VER COLEÇÃO</a>
-                        <a href="<?= BASE_URL ?>/categoria/tenis" class="btn btn-outline-light btn-lg px-4">TÊNIS EXCLUSIVOS</a>
+                        <a href="<?= getCategoryUrl('tenis') ?>" class="btn btn-outline-light btn-lg px-4">TÊNIS EXCLUSIVOS</a>
                     </div>
                 </div>
             </div>
@@ -160,7 +160,7 @@
 
             <!-- CARD DE CATEGORIA 1: TÊNIS -->
             <div class="col">
-                <a href="<?= BASE_URL ?>/categoria/tenis" class="product-card text-decoration-none">
+                <a href="<?= getCategoryUrl('tenis') ?>" class="product-card text-decoration-none">
                     <div class="product-image">
                         <img src="<?= BASE_URL ?>/images/categories/b1.png"
                              alt="Categoria Tênis"
@@ -176,7 +176,7 @@
 
             <!-- CARD DE CATEGORIA 2: CAMISETAS -->
             <div class="col">
-                <a href="<?= BASE_URL ?>/categoria/camisetas" class="product-card text-decoration-none">
+                <a href="<?= getCategoryUrl('camisetas') ?>" class="product-card text-decoration-none">
                     <div class="product-image">
                         <img src="<?= BASE_URL ?>/images/categories/b2.png"
                              alt="Categoria Camisetas"
@@ -192,7 +192,7 @@
 
             <!-- CARD DE CATEGORIA 3: MOLETONS -->
             <div class="col">
-                <a href="<?= BASE_URL ?>/categoria/moletons" class="product-card text-decoration-none">
+                <a href="<?= getCategoryUrl('moletons') ?>" class="product-card text-decoration-none">
                     <div class="product-image">
                         <img src="<?= BASE_URL ?>/images/categories/b3.png"
                              alt="Categoria Moletons"
@@ -208,7 +208,7 @@
 
             <!-- CARD DE CATEGORIA 4: CALÇA -->
             <div class="col">
-                <a href="<?= BASE_URL ?>/categoria/calca" class="product-card text-decoration-none">
+                <a href="<?= getCategoryUrl('calca') ?>" class="product-card text-decoration-none">
                     <div class="product-image">
                         <img src="<?= BASE_URL ?>/images/categories/b4.png"
                              alt="Categoria Calça"

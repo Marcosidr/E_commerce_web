@@ -19,18 +19,11 @@ $router->add('/^newsletter$/', 'Home', 'newsletter');
 
 // Catálogo e produtos
 $router->add('/^catalogo$/', 'Product', 'catalogo');
-$router->add('/^categoria\/(?P<category_slug>[a-z0-9-]+)$/', 'Product', 'categoria');
 $router->add('/^produto\/(?P<id>\d+)$/', 'Product', 'produto');
 $router->add('/^buscar$/', 'Product', 'buscar');
 
-// Rotas para compatibilidade com o design original
-$router->add('/^categoria\/tenis$/', 'Product', 'categoria');
-$router->add('/^categoria\/camisetas$/', 'Product', 'categoria');
-$router->add('/^categoria\/moletons$/', 'Product', 'categoria');
-$router->add('/^categoria\/calcas$/', 'Product', 'categoria');
-$router->add('/^categoria\/acessorios$/', 'Product', 'categoria');
-$router->add('/^produto\/(?P<id>\d+)$/', 'Product', 'produto');
-$router->add('/^categorias$/', 'Categorias', 'categorias');
+// Redirecionamentos para catálogo com filtros (compatibilidade)
+$router->add('/^categoria\/(?P<category_slug>[a-z0-9-]+)$/', 'Product', 'redirectToCategory');
 $router->add('/^login$/', 'Login', 'login');
 $router->add('/^login\/verify$/', 'Login', 'verify');
 

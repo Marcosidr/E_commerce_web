@@ -99,3 +99,26 @@ if (!function_exists('truncateText')) {
         return substr($text, 0, $limit) . $suffix;
     }
 }
+
+if (!function_exists('getCategoryUrl')) {
+    /**
+     * Gera URL do catálogo filtrado por categoria
+     */
+    function getCategoryUrl($categorySlug) {
+        $categoryMap = [
+            'tenis' => 1,
+            'camisetas' => 2,
+            'moletons' => 3,
+            'calcas' => 4,
+            'calca' => 4, // compatibilidade
+            'acessorios' => 5
+        ];
+        
+        $categoryId = $categoryMap[$categorySlug] ?? null;
+        if ($categoryId) {
+            return BASE_URL . "/catalogo?category={$categoryId}";
+        }
+        
+        return BASE_URL . "/catalogo";
+    }
+}

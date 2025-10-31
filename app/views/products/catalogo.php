@@ -3,7 +3,29 @@
 <section class="py-5">
   <div class="container">
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-      <h1 class="m-0 fw-black text-uppercase">Catálogo Completo</h1>
+      <?php 
+        $pageTitle = 'Catálogo Completo';
+        $selectedCategoryName = '';
+        if (!empty($filters['category'])) {
+          foreach ($categories as $cat) {
+            if ($cat['id'] == $filters['category']) {
+              $selectedCategoryName = $cat['name'];
+              $pageTitle = $selectedCategoryName;
+              break;
+            }
+          }
+        }
+      ?>
+      <div>
+        <h1 class="m-0 fw-black text-uppercase"><?= $pageTitle ?></h1>
+        <?php if ($selectedCategoryName): ?>
+          <div class="mt-1">
+            <a href="<?= BASE_URL ?>/catalogo" class="text-muted text-decoration-none small">
+              <i class="bi bi-arrow-left"></i> Voltar ao catálogo completo
+            </a>
+          </div>
+        <?php endif; ?>
+      </div>
       <form class="d-flex align-items-center gap-2" method="get" action="<?= BASE_URL ?>/catalogo">
         <select name="sort" class="form-select form-select-sm w-auto">
           <?php $sort = $filters['sort'] ?? 'recent'; ?>

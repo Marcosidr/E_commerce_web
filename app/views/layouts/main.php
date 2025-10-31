@@ -41,19 +41,6 @@
                             <a class="nav-link" style="color: white;" href="<?= BASE_URL ?>/catalogo">CATÁLOGO</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" style="color: white;" href="<?= BASE_URL ?>/categorias">CATEGORIAS</a>
-                        </li>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/categoria/tenis">Tênis</a></li>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/categoria/camisetas">Camisetas</a>
-                                </li>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/categoria/moletons">Moletons</a></li>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/categoria/calcas">Calças</a></li>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/categoria/acessorios">Acessórios</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" style="color: white;" href="<?= BASE_URL ?>/sobre">SOBRE </a>
                         </li>
                         <li class="nav-item">
@@ -105,16 +92,11 @@
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="fw-bold mb-3">CATEGORIAS</h6>
                     <ul class="list-unstyled">
-                        <li><a href="<?= BASE_URL ?>/categoria/tenis" class="text-light text-decoration-none">Tênis</a>
-                        </li>
-                        <li><a href="<?= BASE_URL ?>/categoria/camisetas"
-                                class="text-light text-decoration-none">Camisetas</a></li>
-                        <li><a href="<?= BASE_URL ?>/categoria/moletons"
-                                class="text-light text-decoration-none">Moletons</a></li>
-                        <li><a href="<?= BASE_URL ?>/categoria/calcas"
-                                class="text-light text-decoration-none">Calças</a></li>
-                        <li><a href="<?= BASE_URL ?>/categoria/acessorios"
-                                class="text-light text-decoration-none">Acessórios</a></li>
+                        <li><a href="<?= getCategoryUrl('tenis') ?>" class="text-light text-decoration-none">Tênis</a></li>
+                        <li><a href="<?= getCategoryUrl('camisetas') ?>" class="text-light text-decoration-none">Camisetas</a></li>
+                        <li><a href="<?= getCategoryUrl('moletons') ?>" class="text-light text-decoration-none">Moletons</a></li>
+                        <li><a href="<?= getCategoryUrl('calcas') ?>" class="text-light text-decoration-none">Calças</a></li>
+                        <li><a href="<?= getCategoryUrl('acessorios') ?>" class="text-light text-decoration-none">Acessórios</a></li>
                     </ul>
                 </div>
 

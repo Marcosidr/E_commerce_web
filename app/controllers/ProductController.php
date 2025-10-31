@@ -50,38 +50,7 @@ class ProductController extends Controller
         ]);
     }
     
-    /**
-     * Produtos por categoria
-     */
-    public function categoria($categorySlug = null)
-    {
-        if (!$categorySlug) {
-            $this->redirect('/catalogo');
-        }
-        
-        $category = $this->categoryModel->findBySlug($categorySlug);
-        if (!$category) {
-            $this->redirect('/catalogo');
-        }
-        
-        $page = (int)($_GET['page'] ?? 1);
-        $limit = 12;
-        $offset = ($page - 1) * $limit;
-        
-        $products = $this->productModel->getByCategory($category['id'], $limit, $offset);
-        $totalProducts = $this->productModel->countByCategory($category['id']);
-        $totalPages = ceil($totalProducts / $limit);
-        
-        $this->loadView('products/categoria', [
-            'title' => $category['name'] . ' - URBANSTREET',
-            'metaDescription' => 'Explore nossa coleção de ' . strtolower($category['name']) . '. Produtos autênticos de streetwear.',
-            'category' => $category,
-            'products' => $products,
-            'currentPage' => $page,
-            'totalPages' => $totalPages,
-            'pageClass' => 'category-page'
-        ]);
-    }
+
     
     /**
      * Detalhes do produto
@@ -128,5 +97,29 @@ class ProductController extends Controller
             'products' => $products,
             'pageClass' => 'search-page'
         ]);
+    }
+    
+    /**
+     * Redireciona URLs antigas de categoria para o catálogo com filtro
+     */
+    public function redirectToCategory($categorySlug = null)
+    {
+        // Mapear slugs para IDs das categorias
+        $categoryMap = [
+            'tenis' => 1,
+            'camisetas' => 2,
+            'moletons' => 3,
+            'calcas' => 4,
+            'acessorios' => 5
+        ];
+        
+        if ($categorySlug && isset($categoryMap[$categorySlug])) {
+            // Redirecionar para catálogo com filtro de categoria
+            $categoryId = $categoryMap[$categorySlug];
+            $this->redirect("/catalogo?category={$categoryId}");
+        } else {
+            // Fallback para catálogo geral
+            $this->redirect('/catalogo');
+        }
     }
 }
