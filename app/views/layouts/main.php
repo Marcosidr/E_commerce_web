@@ -51,9 +51,9 @@
                     <!-- Search & Cart -->
                     <div class="d-flex align-items-center gap-3">
                         <!-- Search -->
-                        <form class="d-flex" method="GET" action="<?= BASE_URL ?>/buscar">
+                        <form class="d-flex" method="GET" action="<?= BASE_URL ?>/catalogo">
                             <div class="input-group">
-                                <input class="form-control" type="search" name="q" placeholder="Buscar..."
+                                <input class="form-control" type="search" name="q" placeholder="Buscar produtos..."
                                     value="<?= $_GET['q'] ?? '' ?>">
                                 <button class="btn btn-outline-light" type="submit">
                                     <i class="fas fa-search"></i>

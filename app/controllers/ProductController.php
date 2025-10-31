@@ -32,6 +32,7 @@ class ProductController extends Controller
             'brand'     => $_GET['brand'] ?? null,
             'price_min' => isset($_GET['min']) ? (float)$_GET['min'] : null,
             'price_max' => isset($_GET['max']) ? (float)$_GET['max'] : null,
+            'search'    => trim($_GET['q'] ?? ''),
             'sort'      => $_GET['sort'] ?? 'recent'
         ];
 

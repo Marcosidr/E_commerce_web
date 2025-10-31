@@ -6,7 +6,12 @@
       <?php 
         $pageTitle = 'Catálogo Completo';
         $selectedCategoryName = '';
-        if (!empty($filters['category'])) {
+        $searchTerm = $filters['search'] ?? '';
+        
+        // Prioridade: busca > categoria > catálogo geral
+        if (!empty($searchTerm)) {
+          $pageTitle = 'Busca: "' . htmlspecialchars($searchTerm) . '"';
+        } elseif (!empty($filters['category'])) {
           foreach ($categories as $cat) {
             if ($cat['id'] == $filters['category']) {
               $selectedCategoryName = $cat['name'];
@@ -18,7 +23,7 @@
       ?>
       <div>
         <h1 class="m-0 fw-black text-uppercase"><?= $pageTitle ?></h1>
-        <?php if ($selectedCategoryName): ?>
+        <?php if ($selectedCategoryName || !empty($searchTerm)): ?>
           <div class="mt-1">
             <a href="<?= BASE_URL ?>/catalogo" class="text-muted text-decoration-none small">
               <i class="bi bi-arrow-left"></i> Voltar ao catálogo completo
@@ -26,15 +31,33 @@
           </div>
         <?php endif; ?>
       </div>
-      <form class="d-flex align-items-center gap-2" method="get" action="<?= BASE_URL ?>/catalogo">
-        <select name="sort" class="form-select form-select-sm w-auto">
-          <?php $sort = $filters['sort'] ?? 'recent'; ?>
-          <option value="recent" <?= $sort==='recent'?'selected':''; ?>>Mais recentes</option>
-          <option value="price_asc" <?= $sort==='price_asc'?'selected':''; ?>>Menor preço</option>
-          <option value="price_desc" <?= $sort==='price_desc'?'selected':''; ?>>Maior preço</option>
-        </select>
-        <button class="btn btn-primary btn-sm" type="submit">Aplicar</button>
-      </form>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <!-- Busca rápida -->
+        <form class="d-flex align-items-center gap-2" method="get" action="<?= BASE_URL ?>/catalogo">
+          <input type="search" name="q" class="form-control form-control-sm" placeholder="Buscar produtos..." 
+                 value="<?= htmlspecialchars($filters['search'] ?? '') ?>" style="min-width: 200px;">
+          <button class="btn btn-outline-primary btn-sm" type="submit">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+        
+        <!-- Ordenação -->
+        <form class="d-flex align-items-center gap-2" method="get" action="<?= BASE_URL ?>/catalogo">
+          <?php if (!empty($filters['search'])): ?>
+            <input type="hidden" name="q" value="<?= htmlspecialchars($filters['search']) ?>">
+          <?php endif; ?>
+          <?php if (!empty($filters['category'])): ?>
+            <input type="hidden" name="category" value="<?= $filters['category'] ?>">
+          <?php endif; ?>
+          <select name="sort" class="form-select form-select-sm w-auto">
+            <?php $sort = $filters['sort'] ?? 'recent'; ?>
+            <option value="recent" <?= $sort==='recent'?'selected':''; ?>>Mais recentes</option>
+            <option value="price_asc" <?= $sort==='price_asc'?'selected':''; ?>>Menor preço</option>
+            <option value="price_desc" <?= $sort==='price_desc'?'selected':''; ?>>Maior preço</option>
+          </select>
+          <button class="btn btn-primary btn-sm" type="submit">Aplicar</button>
+        </form>
+      </div>
     </div>
 
     <div class="row g-4">
@@ -43,6 +66,9 @@
         <form class="bg-dark text-white p-3 rounded" method="get" action="<?= BASE_URL ?>/catalogo">
           <h2 class="h5 fw-bold text-uppercase mb-3">Filtros</h2>
           <input type="hidden" name="sort" value="<?= htmlspecialchars($filters['sort'] ?? 'recent') ?>">
+          <?php if (!empty($filters['search'])): ?>
+            <input type="hidden" name="q" value="<?= htmlspecialchars($filters['search']) ?>">
+          <?php endif; ?>
 
           <div class="mb-3">
             <label class="form-label small text-uppercase">Categoria</label>
