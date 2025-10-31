@@ -32,15 +32,6 @@
         <?php endif; ?>
       </div>
       <div class="d-flex align-items-center gap-2 flex-wrap">
-        <!-- Busca rápida -->
-        <form class="d-flex align-items-center gap-2" method="get" action="<?= BASE_URL ?>/catalogo">
-          <input type="search" name="q" class="form-control form-control-sm" placeholder="Buscar produtos..." 
-                 value="<?= htmlspecialchars($filters['search'] ?? '') ?>" style="min-width: 200px;">
-          <button class="btn btn-outline-primary btn-sm" type="submit">
-            <i class="fas fa-search"></i>
-          </button>
-        </form>
-        
         <!-- Ordenação -->
         <form class="d-flex align-items-center gap-2" method="get" action="<?= BASE_URL ?>/catalogo">
           <?php if (!empty($filters['search'])): ?>
