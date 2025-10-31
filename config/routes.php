@@ -25,7 +25,8 @@ $router->add('/^produto\/(?P<id>\d+)$/', 'Product', 'produto');
 $router->add('/^categoria\/(?P<category_slug>[a-z0-9-]+)$/', 'Product', 'redirectToCategory');
 $router->add('/^login$/', 'Login', 'login');
 $router->add('/^login\/verify$/', 'Login', 'verify');
-
+$router->add('/^cadastro$/', 'Registro', 'cadastro');
+$router->add('/^cadastro\/create$/', 'Registro', 'create');
 
 
 return $router;

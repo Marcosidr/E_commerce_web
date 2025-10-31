@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="<?= BASE_URL ?>/css/urbanstreet.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/css/urbanstreet.css?v=<?= time() ?>" rel="stylesheet">
 </head>
 
 <body class="<?= $pageClass ?? '' ?>">
@@ -68,6 +68,11 @@
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 0
                             </span>
+                        </a>
+
+                        <!-- Profile -->
+                        <a href="<?= BASE_URL ?>/login" class="btn btn-outline-light position-relative perfil-btn">
+                            <i class="fas fa-user perfil"></i>
                         </a>
                     </div>
                 </div>
