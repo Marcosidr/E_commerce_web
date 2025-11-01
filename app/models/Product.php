@@ -241,6 +241,21 @@ class Product extends Model
     }
     
     /**
+     * Busca produto por ID
+     */
+    public function findById($id)
+    {
+        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
+                FROM {$this->table} p 
+                LEFT JOIN categories c ON p.category_id = c.id 
+                WHERE p.id = :id AND p.active = 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Alias para findById (compatibilidade)
      */
     public function getById($id)

@@ -62,11 +62,10 @@
                         </form>
 
                         <!-- Cart -->
-                        <a href="#" class="btn btn-outline-light position-relative">
+                        <a href="<?= BASE_URL ?>/carrinho" class="btn btn-outline-light position-relative cart-btn">
                             <i class="fas fa-shopping-cart"></i>
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                0
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge" id="cartBadge">
+                                <?= $_SESSION['carrinho_count'] ?? 0 ?>
                             </span>
                         </a>
 
@@ -137,6 +136,48 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?= BASE_URL ?>/js/urbanstreet.js"></script>
+    
+    <!-- Estilos para carrinho -->
+    <style>
+    .cart-badge {
+        transition: all 0.2s ease;
+        font-size: 0.7rem;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .cart-btn:hover .cart-badge {
+        background-color: #dc3545 !important;
+        transform: scale(1.1);
+    }
+    
+    .add-to-cart {
+        transition: all 0.3s ease;
+    }
+    
+    .add-to-cart:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Toast personalizado */
+    .alert {
+        border-radius: 8px;
+        border: none;
+    }
+    
+    .alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+    
+    .alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+    }
+    </style>
 </body>
 
 </html>

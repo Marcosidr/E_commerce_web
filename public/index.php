@@ -22,6 +22,11 @@ define('BASE_URL', 'http://localhost/E-comerce/public');
 // Carrega funções helper
 require_once APP_PATH . '/helpers/functions.php';
 
+// Inicializa o contador do carrinho se não existir
+if (!isset($_SESSION['carrinho_count'])) {
+    $_SESSION['carrinho_count'] = 0;
+}
+
 
 try {
     // Carrega as rotas
