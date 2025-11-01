@@ -72,9 +72,34 @@ try {
         echo "✅ Tabela 'products' criada\n";
     }
     
+    if (!in_array('users', $tables)) {
+        echo "⚠️  Tabela 'users' não encontrada. Criando...\n";
+        $pdo->exec("
+            CREATE TABLE users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                email_verified_at TIMESTAMP NULL,
+                password VARCHAR(255) NOT NULL,
+                phone VARCHAR(20) NULL,
+                birth_date DATE NULL,
+                gender ENUM('M', 'F', 'O') NULL,
+                newsletter TINYINT(1) DEFAULT 0,
+                sms_marketing TINYINT(1) DEFAULT 0,
+                active TINYINT(1) DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_email (email),
+                INDEX idx_active (active)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+        echo "✅ Tabela 'users' criada\n";
+    }
+    
     // Verificar se há dados nas tabelas
     $categoryCount = $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn();
     $productCount = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+    $userCount = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
     
     if ($categoryCount == 0) {
         echo "📦 Inserindo categorias de exemplo...\n";
@@ -108,6 +133,7 @@ try {
     echo "\n🎉 Setup do banco concluído com sucesso!\n";
     echo "📊 Categorias: {$categoryCount}\n";
     echo "📦 Produtos: {$productCount}\n";
+    echo "👥 Usuários: {$userCount}\n";
     
 } catch (PDOException $e) {
     echo "❌ Erro: " . $e->getMessage() . "\n";

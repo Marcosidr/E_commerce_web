@@ -63,7 +63,7 @@
           <div class="divider">ou</div>
 
           <p class="text-center m-0" style="font-size:.95rem;">
-            Não tem uma conta? <a href="#">Cadastrar</a>
+            Não tem uma conta? <a href="<?= BASE_URL ?>/cadastro">Cadastrar</a>
           </p>
         </div>
       </div>
