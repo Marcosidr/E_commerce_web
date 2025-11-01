@@ -76,7 +76,12 @@ class RegistroController extends Controller
             $userData = $this->users->create([
                 'name' => $nome . ' ' . $sobrenome,
                 'email' => $email,
-                'password' => password_hash($password, PASSWORD_DEFAULT)
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+                'telefone' => $_POST['telefone'] ?? null,
+                'data_nascimento' => $_POST['data_nascimento'] ?? null,
+                'sexo' => $_POST['sexo'] ?? null,
+                'newsletter' => isset($_POST['newsletter']) ? 1 : 0,
+                'sms_marketing' => isset($_POST['sms_marketing']) ? 1 : 0
             ]);
 
             if ($userData) {
