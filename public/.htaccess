@@ -1,29 +1,9 @@
-RewriteEngine On
-
-# Redirecionar tudo para index.php se o arquivo/diretório não existir
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [QSA,L]
-
-# Segurança: Bloquear acesso a arquivos sensíveis
-<Files "*.env">
-    Order Allow,Deny
-    Deny from all
-</Files>
-
-<Files "composer.*">
-    Order Allow,Deny
-    Deny from all
-</Files>
-
-# Cache para assets estáticos
-<IfModule mod_expires.c>
-    ExpiresActive on
-    ExpiresByType text/css "access plus 1 year"
-    ExpiresByType application/javascript "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /E_commerce_web/public/
+    
+    # Redirecionar para index.php se o arquivo/diretório não existir
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
