@@ -64,6 +64,7 @@
                                 ['label'=>'WhatsApp','lines'=>['(11) 98765-4321','Seg a Sex: 9h às 18h']],
                                 ['label'=>'Telefone','lines'=>['(11) 3456-7890','Seg a Sex: 9h às 18h']],
                                 ['label'=>'Endereço','lines'=>['Rua Augusta, 1234','Consolação - São Paulo/SP','CEP: 01304-001']],
+                                
                             ];
                             foreach ($infos as $box): ?>
                                 <div class="contact-info-block">

@@ -900,3 +900,231 @@ body.login-page {
 
 
 
+
+
+/* ================================
+   PÁGINA SOBRE — ESTILO URBAN PREMIUM
+   ================================ */
+
+.contact-wrapper {
+    background: #000;
+    color: #fff;
+    padding-bottom: 3rem;
+}
+
+/* ===== Cabeçalho ===== */
+.contact-header-title {
+    font-size: clamp(2.5rem, 6vw, 4.2rem);
+    font-weight: 900;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+/* detalhe abaixo do título */
+.contact-header-title::after {
+    content: '';
+    width: 80px;
+    height: 4px;
+    background: #dc2626;
+    display: block;
+    margin-top: .6rem;
+    border-radius: 2px;
+}
+
+.contact-lead {
+    font-size: 1.15rem;
+    color: #a1a1aa;
+    max-width: 680px;
+    line-height: 1.7;
+    margin-top: .5rem;
+}
+
+/* ===== GRID PRINCIPAL ===== */
+.contact-grid {
+    margin-top: 3rem;
+    display: grid;
+    gap: 4rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+/* ===================================
+   BLOCO — TEXTO ESQUERDA
+   =================================== */
+
+.contact-form-title {
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 1.8rem;
+    position: relative;
+}
+
+/* divisorzinho vermelho urbano */
+.contact-form-title::before {
+    content: "";
+    position: absolute;
+    width: 55px;
+    height: 3px;
+    background: #dc2626;
+    bottom: -8px;
+    left: 0;
+    border-radius: 2px;
+}
+
+/* texto */
+.about-text-content p {
+    color: #d4d4d8;
+    font-size: 1.06rem;
+    line-height: 1.85;
+    margin-bottom: 1.6rem;
+    transition: .3s ease;
+}
+
+/* leve brilho ao passar o mouse */
+.about-text-content p:hover {
+    color: #fff;
+}
+
+/* botão */
+.contact-submit {
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
+    border: none;
+    color: #fff;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    padding: 1rem 1.4rem;
+    border-radius: .85rem;
+    display: inline-block;
+    transition: .3s ease;
+    box-shadow: 0 0 0 transparent;
+}
+
+.contact-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(220, 38, 38, 0.35);
+}
+
+/* ===================================
+   BLOCO — VALORES E PILARES (direita)
+   =================================== */
+
+.contact-info-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.contact-info-title {
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 1.8rem;
+    position: relative;
+}
+
+.contact-info-title::before {
+    content: "";
+    position: absolute;
+    width: 55px;
+    height: 3px;
+    background: #dc2626;
+    bottom: -8px;
+    left: 0;
+    border-radius: 2px;
+}
+
+/* item de valor */
+.contact-info-block {
+    display: flex;
+    gap: 1.1rem;
+    align-items: flex-start;
+    transition: .3s ease;
+    padding: .4rem 0;
+}
+
+.contact-info-block:hover {
+    transform: translateX(6px);
+}
+
+/* círculo */
+.contact-icon-circle {
+    width: 3.1rem;
+    height: 3.1rem;
+    background: linear-gradient(145deg, #dc2626, #b91c1c);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .65rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #fff;
+    box-shadow: 0 3px 9px rgba(220, 38, 38, 0.3);
+}
+
+/* título pilar */
+.contact-info-block h3 {
+    font-size: .9rem;
+    letter-spacing: .14em;
+    margin-bottom: .25rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* texto pilar */
+.contact-info-block p {
+    color: #a1a1aa;
+    font-size: .92rem;
+    line-height: 1.55;
+}
+
+/* ===================================
+   BLOCO — MISSÃO
+   =================================== */
+
+.contact-policy {
+    background: #0f0f0f;
+    border: 1px solid #262626;
+    padding: 1.8rem 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.03);
+    transition: .3s ease;
+}
+
+.contact-policy:hover {
+    border-color: #dc2626;
+}
+
+.contact-policy h3 {
+    font-size: .95rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.contact-policy p {
+    color: #d4d4d8;
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+/* ===================================
+   RESPONSIVIDADE
+   =================================== */
+
+@media (max-width: 640px) {
+    .contact-grid {
+        gap: 2.5rem;
+    }
+
+    .contact-header-title {
+        font-size: 2.4rem;
+    }
+}
