@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /E_commerce_web/public/
+    RewriteBase /E-comerce/public/
     
     # Redirecionar para index.php se o arquivo/diretório não existir
     RewriteCond %{REQUEST_FILENAME} !-f

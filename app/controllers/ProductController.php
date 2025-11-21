@@ -53,9 +53,7 @@ class ProductController extends Controller
     
 
     
-    /**
-     * Detalhes do produto
-     */
+ 
     public function produto($id = null)
     {
         if (!$id) {
@@ -79,9 +77,7 @@ class ProductController extends Controller
         ]);
     }
     
-    /**
-     * Redireciona URLs antigas de categoria para o catálogo com filtro
-     */
+    
     public function redirectToCategory($categorySlug = null)
     {
         // Mapear slugs para IDs das categorias
