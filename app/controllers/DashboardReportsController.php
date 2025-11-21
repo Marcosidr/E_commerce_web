@@ -23,11 +23,38 @@ class DashboardReportsController extends Controller
         }
     }
 
+    public function index()
+    {
+        // Verifica admin
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin') {
+            header('Location: ' . BASE_URL . '/');
+            exit;
+        }
+
+        $type = $_GET['type'] ?? '';
+        $from = $_GET['from'] ?? '';
+        $to   = $_GET['to'] ?? '';
+        $data = null;
+        if ($type) {
+            $data = $this->buildReport($type, $from, $to);
+        }
+        $this->loadPartial('Painel/relatorios/index', [
+            'title' => 'Relatórios - Dashboard',
+            'type' => $type,
+            'from' => $from,
+            'to' => $to,
+            'report' => $data
+        ]);
+    }
+
     public function exportProducts()
     {
         $format = $this->detectFormatFromUri('produtos');
-        $rows = $this->db->query("SELECT id, name, price, stock_quantity, featured, active FROM products ORDER BY id DESC")
-                         ->fetchAll(\PDO::FETCH_ASSOC);
+        [$clause,$params] = $this->buildDateWhere($_GET['from'] ?? '', $_GET['to'] ?? '');
+        $sql = "SELECT id, name, price, stock_quantity, featured, active, created_at FROM products".$clause." ORDER BY id DESC";
+        $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k,$v); $stmt->execute();
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $this->exportRows('produtos', $rows, $format);
     }
 
@@ -35,10 +62,42 @@ class DashboardReportsController extends Controller
     {
         $format = $this->detectFormatFromUri('pedidos');
         try{
-            $rows = $this->db->query("SELECT id, user_id, status, total_amount, created_at FROM orders ORDER BY id DESC")
-                             ->fetchAll(\PDO::FETCH_ASSOC);
+            [$clause,$params] = $this->buildDateWhere($_GET['from'] ?? '', $_GET['to'] ?? '');
+            $sql = "SELECT id, user_id, status, total_amount, created_at FROM orders".$clause." ORDER BY id DESC";
+            $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k,$v); $stmt->execute();
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }catch(\Throwable $e){ $rows = []; }
         $this->exportRows('pedidos', $rows, $format);
+    }
+
+    public function exportCustomers()
+    {
+        $format = $this->detectFormatFromUri('clientes');
+        try{
+            [$clause,$params] = $this->buildDateWhere($_GET['from'] ?? '', $_GET['to'] ?? '');
+            $sql = "SELECT id, name, email, phone, created_at FROM users WHERE active = 1" . ($clause? str_replace(' WHERE ',' AND ',$clause): '') . " ORDER BY created_at DESC";
+            $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k,$v); $stmt->execute();
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        }catch(\Throwable $e){ $rows = []; }
+        $this->exportRows('clientes', $rows, $format);
+    }
+
+    public function exportDailySales()
+    {
+        $format = $this->detectFormatFromUri('vendas_diario');
+        try{
+            [$clause,$params] = $this->buildDateWhere($_GET['from'] ?? '', $_GET['to'] ?? '');
+            $sql = "SELECT DATE(created_at) as dia, COUNT(*) as total_pedidos, SUM(total_amount) as total_vendas FROM orders".$clause." GROUP BY DATE(created_at) ORDER BY dia DESC";
+            $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k,$v); $stmt->execute();
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        }catch(\Throwable $e){ $rows = []; }
+        $this->exportRows('vendas_diario', $rows, $format);
+    }
+
+    public function exportSales()
+    {
+        // Exporta pedidos (vendas) em formato detalhado; similar a exportOrders
+        return $this->exportOrders();
     }
 
     private function exportRows(string $baseName, array $rows, string $format): void
@@ -102,5 +161,63 @@ class DashboardReportsController extends Controller
             return strtolower($m[1]);
         }
         return 'csv';
+    }
+
+    private function buildReport(string $type, string $from = '', string $to = ''): ?array
+    {
+        [$clause,$params,$where] = $this->buildDateWhere($from, $to, true);
+
+        try {
+            switch ($type) {
+                case 'produtos':
+                    $sql = "SELECT id, name, price, stock_quantity, featured, active, created_at FROM products" . $clause . " ORDER BY id DESC LIMIT 1000";
+                    $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k, $v); $stmt->execute();
+                    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                    return ['columns'=>array_keys($rows[0] ?? ['id'=>null,'name'=>null]), 'rows'=>$rows];
+
+                case 'pedidos':
+                case 'vendas':
+                    $sql = "SELECT id, user_id, status, total_amount, created_at FROM orders" . $clause . " ORDER BY id DESC LIMIT 1000";
+                    $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k, $v); $stmt->execute();
+                    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                    return ['columns'=>array_keys($rows[0] ?? ['id'=>null,'user_id'=>null]), 'rows'=>$rows];
+
+                case 'vendas_diario':
+                    // Para período, aplica nos limites de created_at e agrupa por dia
+                    $base = "SELECT DATE(created_at) as dia, COUNT(*) as total_pedidos, SUM(total_amount) as total_vendas FROM orders" . $clause . " GROUP BY DATE(created_at) ORDER BY dia DESC";
+                    $stmt = $this->db->prepare($base); foreach ($params as $k=>$v) $stmt->bindValue($k, $v); $stmt->execute();
+                    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                    return ['columns'=>['dia','total_pedidos','total_vendas'], 'rows'=>$rows];
+
+                case 'clientes':
+                    $sql = "SELECT id, name, email, phone, created_at FROM users WHERE active = 1" . ($where? ' AND ' . implode(' AND ', $where): '') . " ORDER BY id DESC LIMIT 1000";
+                    $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k, $v); $stmt->execute();
+                    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                    return ['columns'=>array_keys($rows[0] ?? ['id'=>null,'name'=>null]), 'rows'=>$rows];
+
+                case 'visao_geral':
+                case 'tudo':
+                    // Resumo com contagens principais
+                    $counts = [];
+                    $counts['total_produtos'] = (int)($this->db->query('SELECT COUNT(*) FROM products')->fetchColumn() ?: 0);
+                    try { $counts['total_pedidos'] = (int)($this->db->query('SELECT COUNT(*) FROM orders')->fetchColumn() ?: 0); } catch (\Throwable $e) { $counts['total_pedidos'] = 0; }
+                    $counts['total_clientes'] = (int)($this->db->query('SELECT COUNT(*) FROM users WHERE active = 1')->fetchColumn() ?: 0);
+                    $rows = [$counts];
+                    return ['columns'=>array_keys($rows[0]), 'rows'=>$rows];
+            }
+        } catch (\Throwable $e) {
+            // Fall-through: sem dados
+        }
+        return null;
+    }
+
+    private function buildDateWhere(string $from = '', string $to = '', bool $returnWhereParts = false): array
+    {
+        $where = [];
+        $params = [];
+        if ($from) { $where[] = 'created_at >= :from'; $params[':from'] = $from . ' 00:00:00'; }
+        if ($to)   { $where[] = 'created_at <= :to';   $params[':to']   = $to   . ' 23:59:59'; }
+        $clause = $where ? (' WHERE ' . implode(' AND ', $where)) : '';
+        return $returnWhereParts ? [$clause,$params,$where] : [$clause,$params];
     }
 }

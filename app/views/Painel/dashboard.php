@@ -103,7 +103,7 @@ $activity = [
         <a href="<?= BASE_URL ?>/dashboard/pedidos">💳 Pedidos</a>
         <a href="<?= BASE_URL ?>/dashboard/produtos">🧾 Produtos</a>
         <a href="<?= BASE_URL ?>/dashboard/clientes">👥 Clientes</a>
-        <a href="<?= BASE_URL ?>/dashboard/relatorios/produtos.csv">📈 Relatórios</a>
+        <a href="<?= BASE_URL ?>/dashboard/relatorios">📈 Relatórios</a>
         <a href="<?= BASE_URL ?>/configuracoes">⚙️ Configurações</a>
       </nav>
       <div class="logout-box">
@@ -181,7 +181,7 @@ $activity = [
             </div>
             <div class="shortcuts">
               <button class="shortcut-btn" onclick="window.location='<?= BASE_URL ?>/dashboard/produtos';">+ Gerenciar produtos</button>
-              <button class="shortcut-btn" onclick="window.location='<?= BASE_URL ?>/dashboard/relatorios/produtos.csv';">Exportar produtos (CSV)</button>
+              <button class="shortcut-btn" onclick="window.location='<?= BASE_URL ?>/dashboard/relatorios';">Abrir relatórios</button>
               <button class="shortcut-btn" onclick="window.location='<?= BASE_URL ?>';">Ver vitrine</button>
             </div>
           </div>

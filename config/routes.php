@@ -59,6 +59,11 @@ $router->add('/^dashboard\/clientes\/(?P<id>\d+)$/', 'DashboardCustomers', 'show
 // Dashboard > Relatórios (exportações)
 $router->add('/^dashboard\/relatorios\/produtos\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportProducts');
 $router->add('/^dashboard\/relatorios\/pedidos\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportOrders');
+// Dashboard > Relatórios (UI + outras exportações)
+$router->add('/^dashboard\/relatorios$/', 'DashboardReports', 'index');
+$router->add('/^dashboard\/relatorios\/clientes\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportCustomers');
+$router->add('/^dashboard\/relatorios\/vendas_diario\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportDailySales');
+$router->add('/^dashboard\/relatorios\/vendas\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportSales');
 
 
 return $router;
