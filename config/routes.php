@@ -37,6 +37,8 @@ $router->add('/^carrinho\/atualizar$/', 'Carrinho', 'atualizar');
 $router->add('/^carrinho\/remover$/', 'Carrinho', 'remover');
 $router->add('/^carrinho\/limpar$/', 'Carrinho', 'limpar');
 $router->add('/^carrinho\/dados$/', 'Carrinho', 'dados');
+//dashboard 
+$router->add('/^dashboard$/', 'Dashboard', 'index');
 
 
 return $router;

@@ -36,7 +36,7 @@ class LoginController extends Controller
     public function verify()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . '/login');
+            header('Location: ' . BASE_URL . '/dashboard');
             return;
         }
 
@@ -64,6 +64,6 @@ class LoginController extends Controller
             'id' => $dataUsers->id,
             'nome' => $dataUsers->name
         ];
-        echo "<script>location.href='" . BASE_URL . "';</script>"; // redireciona para home
+        echo "<script>location.href='" . BASE_URL . " ';</script>"; // redireciona para home
     }
 }
