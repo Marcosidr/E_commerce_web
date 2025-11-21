@@ -36,8 +36,8 @@ class LoginController extends Controller
     public function verify()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . '/dashboard');
-            return;
+            header('Location: ' . BASE_URL . '/login');
+            exit;
         }
 
         $email = trim($_POST['email'] ?? '');
@@ -45,25 +45,88 @@ class LoginController extends Controller
 
         // Validações básicas
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo "<script>mensagem('Digite um email válido','error','');history.back();</script>"; return;
+            $_SESSION['flash_message'] = [
+                'type' => 'danger',
+                'text' => 'Digite um e-mail válido.'
+            ];
+            header('Location: ' . BASE_URL . '/login');
+            exit;
         }
         if ($password === '') {
-            echo "<script>mensagem('Senha obrigatória','error','');history.back();</script>"; return;
+            $_SESSION['flash_message'] = [
+                'type' => 'danger',
+                'text' => 'Senha obrigatória.'
+            ];
+            header('Location: ' . BASE_URL . '/login');
+            exit;
         }
 
-    $dataUsers = $this->users->getByEmail($email);
+        $dataUsers = $this->users->getByEmail($email);
         if (!$dataUsers || empty($dataUsers->id)) {
-            echo "<script>mensagem('Usuário inválido','error','');history.back();</script>"; return;
+            $_SESSION['flash_message'] = [
+                'type' => 'danger',
+                'text' => 'Usuário não encontrado.'
+            ];
+            header('Location: ' . BASE_URL . '/login');
+            exit;
         }
         if (!password_verify($password, $dataUsers->password)) {
-            echo "<script>mensagem('Senha inválida','error','');history.back();</script>"; return;
+            $_SESSION['flash_message'] = [
+                'type' => 'danger',
+                'text' => 'Senha inválida.'
+            ];
+            header('Location: ' . BASE_URL . '/login');
+            exit;
         }
+        $adminEmails = [
+            'admin@urbanstreet.com',
+            'marcosincio556@gmail.com'
+        ];
+        $isAdmin = in_array(strtolower($dataUsers->email), $adminEmails, true);
+        $role = $isAdmin ? 'admin' : 'cliente';
 
-        // Sucesso
         $_SESSION['users'] = [
             'id' => $dataUsers->id,
-            'nome' => $dataUsers->name
+            'nome' => $dataUsers->name,
+            'email' => $dataUsers->email,
+            'role' => $role
         ];
-        echo "<script>location.href='" . BASE_URL . " ';</script>"; // redireciona para home
+
+        $redirectPath = $this->consumeRedirectAfterLogin();
+
+        if ($redirectPath) {
+            header('Location: ' . BASE_URL . $redirectPath);
+            exit;
+        }
+
+        header('Location: ' . BASE_URL);
+        exit;
+    }
+
+    public function logout()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        session_unset();
+        session_destroy();
+        header('Location: ' . BASE_URL . '/login');
+        exit;
+    }
+
+    private function consumeRedirectAfterLogin(): ?string
+    {
+        if (empty($_SESSION['redirect_after_login'])) {
+            return null;
+        }
+
+        $path = $_SESSION['redirect_after_login'];
+        unset($_SESSION['redirect_after_login']);
+
+        if (is_string($path) && isset($path[0]) && $path[0] === '/') {
+            return $path;
+        }
+
+        return null;
     }
 }

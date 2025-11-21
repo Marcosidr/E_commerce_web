@@ -1,3 +1,12 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+$flash = $_SESSION['flash_message'] ?? null;
+if ($flash) {
+  unset($_SESSION['flash_message']);
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -24,6 +33,12 @@
             <h2 class="mt-3 mb-1" style="font-size:1.6rem; font-weight:800;">Bem-vindo de volta</h2>
             <p class="text-muted m-0" style="font-size:.95rem;">Entre para continuar</p>
           </div>
+
+          <?php if (!empty($flash)) : ?>
+            <div class="alert alert-<?= htmlspecialchars($flash['type']) ?>" role="alert">
+              <?= htmlspecialchars($flash['text']) ?>
+            </div>
+          <?php endif; ?>
 
           <form method="POST" action="<?= BASE_URL ?>/login/verify" novalidate>
             <div class="mb-3">

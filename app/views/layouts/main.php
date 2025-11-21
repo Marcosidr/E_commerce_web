@@ -1,3 +1,16 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$currentUser = $_SESSION['users'] ?? null;
+$isAdminSession = isset($currentUser['role']) && $currentUser['role'] === 'admin';
+$cartCount = isset($_SESSION['carrinho_count']) ? (int)$_SESSION['carrinho_count'] : 0;
+$firstName = null;
+if ($currentUser && !empty($currentUser['nome'])) {
+    $parts = explode(' ', trim($currentUser['nome']));
+    $firstName = $parts[0] ?? $currentUser['nome'];
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -17,6 +30,9 @@
         rel="stylesheet">
     <!-- Custom CSS -->
     <link href="<?= BASE_URL ?>/css/urbanstreet.css?v=<?= time() ?>" rel="stylesheet">
+    <script>
+        window.BASE_URL = '<?= BASE_URL ?>';
+    </script>
 </head>
 
 <body class="<?= $pageClass ?? '' ?>">
@@ -64,15 +80,35 @@
                         <!-- Cart -->
                         <a href="<?= BASE_URL ?>/carrinho" class="btn btn-outline-light position-relative cart-btn">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge" id="cartBadge">
-                                <?= $_SESSION['carrinho_count'] ?? 0 ?>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge <?= $cartCount > 0 ? '' : 'd-none' ?>" id="cartBadge">
+                                <?= $cartCount ?>
                             </span>
                         </a>
 
+                    
+
                         <!-- Profile -->
-                        <a href="<?= BASE_URL ?>/login" class="btn btn-outline-light position-relative perfil-btn">
-                            <i class="fas fa-user perfil"></i>
-                        </a>
+                        <?php if ($currentUser): ?>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle me-1"></i>
+                                    <?= htmlspecialchars($firstName ?? 'Minha conta') ?>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><span class="dropdown-item-text text-muted">Logado como <?= htmlspecialchars($currentUser['email']) ?></span></li>
+                                    <?php if ($isAdminSession): ?>
+                                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard">Ir para o dashboard</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    <?php endif; ?>
+                                    <li><a class="dropdown-item" href="<?= BASE_URL ?>/carrinho">Meu carrinho</a></li>
+                                    <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout">Sair</a></li>
+                                </ul>
+                            </div>
+                        <?php else: ?>
+                            <a href="<?= BASE_URL ?>/login" class="btn btn-outline-light position-relative perfil-btn">
+                                <i class="fas fa-user perfil"></i>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

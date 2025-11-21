@@ -61,6 +61,9 @@ class CarrinhoController extends Controller
         $produtoId = (int)($_POST['produto_id'] ?? 0);
         $quantidade = (int)($_POST['quantidade'] ?? 1);
         $tamanho = $_POST['tamanho'] ?? '';
+        if (!is_string($tamanho) || trim($tamanho) === '') {
+            $tamanho = 'UNICO';
+        }
         
         // Validações
         if ($produtoId <= 0) {
@@ -219,6 +222,38 @@ class CarrinhoController extends Controller
             'itens' => $this->getCarrinhoDetalhado()
         ]);
         exit;
+    }
+
+    /**
+     * Etapa de checkout: exige usuário autenticado
+     */
+    public function checkout()
+    {
+        $carrinho = $this->getCarrinhoDetalhado();
+
+        if (empty($carrinho)) {
+            $_SESSION['error'] = 'Seu carrinho está vazio. Adicione produtos para continuar.';
+            header('Location: ' . BASE_URL . '/carrinho');
+            exit;
+        }
+
+        if (!isset($_SESSION['users'])) {
+            $_SESSION['flash_message'] = [
+                'type' => 'warning',
+                'text' => 'Faça login ou crie uma conta para finalizar sua compra.'
+            ];
+            $_SESSION['redirect_after_login'] = '/checkout';
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+
+        $this->loadView('checkout', [
+            'title' => 'Finalizar compra - URBANSTREET',
+            'metaDescription' => 'Revise seus dados e conclua o pedido',
+            'carrinho' => $carrinho,
+            'total' => $this->calcularTotal(),
+            'pageClass' => 'checkout-page'
+        ]);
     }
     
     /**

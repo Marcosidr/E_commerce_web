@@ -13,6 +13,50 @@ class Product extends Model
     protected $table = 'products';
     
     /**
+     * Lista produtos para administração (campos essenciais)
+     */
+    public function getAllForAdmin($limit = 100, $offset = 0)
+    {
+        $sql = "SELECT id, name, price, featured, active, stock_quantity FROM {$this->table} ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Altera flag de destaque do produto
+     */
+    public function setFeatured(int $id, bool $featured): bool
+    {
+        $sql = "UPDATE {$this->table} SET featured = :featured, updated_at = NOW() WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $val = $featured ? 1 : 0;
+        $stmt->bindParam(':featured', $val, \PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+    
+    /**
+     * Atualiza campos básicos de produto (admin)
+     */
+    public function updateBasic(int $id, array $data): bool
+    {
+        $allowed = ['name','price','brand','stock_quantity','active','category_id','featured'];
+        $payload = [];
+        foreach ($allowed as $field) {
+            if (array_key_exists($field, $data)) {
+                $payload[$field] = $data[$field];
+            }
+        }
+        if (empty($payload)) return false;
+        // garante updated_at
+        $payload['updated_at'] = date('Y-m-d H:i:s');
+        return (bool) $this->update($id, $payload);
+    }
+    
+    /**
      * Busca produtos em destaque
      */
     public function getFeatured($limit = 4)

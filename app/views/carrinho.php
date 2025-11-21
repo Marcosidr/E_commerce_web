@@ -167,9 +167,9 @@
                                 </div>
                                 
                                 <div class="d-grid gap-2 mt-4">
-                                    <button class="btn btn-primary btn-lg" type="button">
+                                    <a class="btn btn-primary btn-lg" href="<?= BASE_URL ?>/checkout">
                                         <i class="fas fa-lock me-2"></i>Finalizar Compra
-                                    </button>
+                                    </a>
                                     <button class="btn btn-outline-secondary" type="button">
                                         <i class="fas fa-calculator me-2"></i>Calcular Frete
                                     </button>

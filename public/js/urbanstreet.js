@@ -1,4 +1,5 @@
 // 🏷️ URBANSTREET - JavaScript Personalizado
+const BASE_URL = window.BASE_URL || '';
 
 // Quando o DOM for completamente carregado, inicializa a aplicação
 document.addEventListener('DOMContentLoaded', function() {
@@ -106,47 +107,80 @@ function handleNewsletterSubmit(form) {
 // CARRINHO
 // =============================
 function initCart() {
-    // Carrega contador salvo no localStorage
-    updateCartCount(getCartItemCount());
+    const path = window.location.pathname || '';
+    if (path.includes('carrinho')) {
+        refreshCartSummary();
+    }
+}
+
+function refreshCartSummary() {
+    fetch(`${BASE_URL}/carrinho/dados`, {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data && data.success) {
+            updateCartCount(data.totalItens || 0);
+        }
+    })
+    .catch(() => {
+        // ignora erros silenciosamente
+    });
 }
 
 // Adiciona um produto ao carrinho
 function addToCart(productId, button) {
     const originalContent = button.innerHTML;
-    
-    // Estado de carregamento no botão
+    const tamanho = (button.dataset.productSize && button.dataset.productSize.trim()) || 'UNICO';
+
     button.innerHTML = '<span class="spinner"></span>';
     button.disabled = true;
-    
-    // Simula a adição ao carrinho
-    setTimeout(() => {
+
+    const payload = new URLSearchParams();
+    payload.append('produto_id', productId);
+    payload.append('quantidade', 1);
+    payload.append('tamanho', tamanho);
+
+    fetch(`${BASE_URL}/carrinho/adicionar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: payload.toString()
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            updateCartCount(result.totalItens || 0);
+            showNotification(result.message || 'Produto adicionado ao carrinho!', 'success');
+            animateCartIcon();
+        } else {
+            showNotification(result.message || 'Não foi possível adicionar ao carrinho.', 'error');
+        }
+    })
+    .catch(() => {
+        showNotification('Erro ao adicionar ao carrinho.', 'error');
+    })
+    .finally(() => {
         button.innerHTML = originalContent;
         button.disabled = false;
-        
-        const currentCount = getCartItemCount();
-        const newCount = currentCount + 1;
-        localStorage.setItem('cart_count', newCount);
-        updateCartCount(newCount);
-        
-        showNotification('Produto adicionado ao carrinho!', 'success');
-        animateCartIcon();
-    }, 800);
+    });
 }
 
 // Atualiza o contador do carrinho no topo
 function updateCartCount(count) {
-    const cartBadges = document.querySelectorAll('.badge');
-    
-    cartBadges.forEach(badge => {
-        if (badge.closest('.btn')) {
-            badge.textContent = count;
-        }
-    });
-}
+    const badge = document.getElementById('cartBadge');
+    if (!badge) return;
 
-// Retorna o total de itens do carrinho
-function getCartItemCount() {
-    return parseInt(localStorage.getItem('cart_count') || '0');
+    badge.textContent = count;
+    if (count > 0) {
+        badge.classList.remove('d-none');
+    } else {
+        badge.classList.add('d-none');
+    }
 }
 
 // Anima o ícone do carrinho quando um produto é adicionado
@@ -299,3 +333,12 @@ console.log(
     'background: #e53e3e; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
     'color: #666; font-style: italic;'
 );
+
+// Expor utilitário globalmente para garantir disponibilidade em todas as páginas
+try {
+    if (typeof window !== 'undefined' && typeof showNotification === 'function') {
+        window.showNotification = showNotification;
+    }
+} catch (e) {
+    // silencioso
+}

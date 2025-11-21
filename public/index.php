@@ -32,7 +32,11 @@ if (file_exists($helperPath)) {
     require_once $helperPath;
 }
 
-// Inicializa o contador do carrinho se não existir
+// Garante estruturas básicas do carrinho
+if (!isset($_SESSION['carrinho']) || !is_array($_SESSION['carrinho'])) {
+    $_SESSION['carrinho'] = [];
+}
+
 if (!isset($_SESSION['carrinho_count'])) {
     $_SESSION['carrinho_count'] = 0;
 }

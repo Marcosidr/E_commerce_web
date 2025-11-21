@@ -27,6 +27,7 @@ $router->add('/^categoria\/(?P<category_slug>[a-z0-9-]+)$/', 'Product', 'redirec
 // Autenticação
 $router->add('/^login$/', 'Login', 'login');
 $router->add('/^login\/verify$/', 'Login', 'verify');
+$router->add('/^logout$/', 'Login', 'logout');
 $router->add('/^cadastro$/', 'Registro', 'cadastro');
 $router->add('/^cadastro\/create$/', 'Registro', 'create');
 
@@ -37,8 +38,27 @@ $router->add('/^carrinho\/atualizar$/', 'Carrinho', 'atualizar');
 $router->add('/^carrinho\/remover$/', 'Carrinho', 'remover');
 $router->add('/^carrinho\/limpar$/', 'Carrinho', 'limpar');
 $router->add('/^carrinho\/dados$/', 'Carrinho', 'dados');
-//dashboard 
+$router->add('/^checkout$/', 'Carrinho', 'checkout');
+// Dashboard (painel após login)
 $router->add('/^dashboard$/', 'Dashboard', 'index');
+
+// Dashboard > Produtos
+$router->add('/^dashboard\/produtos$/', 'DashboardProducts', 'index');
+$router->add('/^dashboard\/produtos\/(?P<id>\d+)\/editar$/', 'DashboardProducts', 'edit');
+$router->add('/^dashboard\/produtos\/(?P<id>\d+)\/atualizar$/', 'DashboardProducts', 'update');
+$router->add('/^dashboard\/produtos\/(?P<id>\d+)\/destaque$/', 'DashboardProducts', 'toggleFeatured');
+
+// Dashboard > Pedidos
+$router->add('/^dashboard\/pedidos$/', 'DashboardOrders', 'index');
+$router->add('/^dashboard\/pedidos\/(?P<id>\d+)$/', 'DashboardOrders', 'show');
+
+// Dashboard > Clientes
+$router->add('/^dashboard\/clientes$/', 'DashboardCustomers', 'index');
+$router->add('/^dashboard\/clientes\/(?P<id>\d+)$/', 'DashboardCustomers', 'show');
+
+// Dashboard > Relatórios (exportações)
+$router->add('/^dashboard\/relatorios\/produtos\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportProducts');
+$router->add('/^dashboard\/relatorios\/pedidos\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportOrders');
 
 
 return $router;
