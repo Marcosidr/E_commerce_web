@@ -43,12 +43,12 @@
                 <div class="col-lg-8">
                     <div class="cart-items">
                         <div class="card cart-card">
-                            <div class="card-body">
+                            <div class="card-body cart-items-container">
                                 <?php foreach ($carrinho as $key => $item): ?>
                                     <div class="cart-item" data-key="<?= htmlspecialchars($key) ?>">
                                         <div class="row align-items-center g-3">
                                             <!-- Imagem do produto -->
-                                            <div class="col-md-2 col-3">
+                                            <div class="col-md-2 col-4">
                                                 <div class="product-image">
                                                     <?php if ($item['imagem']): ?>
                                                         <img src="<?= getProductImageUrl($item['produto_id']) ?>" 
@@ -63,12 +63,12 @@
                                             </div>
                                             
                                             <!-- Detalhes do produto -->
-                                            <div class="col-md-4 col-9">
+                                            <div class="col-md-3 col-8">
                                                 <h5 class="product-name mb-1"><?= htmlspecialchars($item['nome']) ?></h5>
                                                 <p class="text-muted mb-1">
                                                     <small>Marca: <?= htmlspecialchars($item['marca']) ?></small>
                                                 </p>
-                                                <?php if ($item['tamanho']): ?>
+                                                <?php if ($item['tamanho'] && $item['tamanho'] !== 'UNICO'): ?>
                                                     <p class="text-muted mb-0">
                                                         <small>Tamanho: <?= htmlspecialchars($item['tamanho']) ?></small>
                                                     </p>
@@ -76,19 +76,19 @@
                                             </div>
                                             
                                             <!-- Preço unitário -->
-                                            <div class="col-md-2 col-6">
-                                                <div class="text-center">
-                                                    <span class="fw-semibold">R$ <?= number_format($item['preco'], 2, ',', '.') ?></span>
-                                                </div>
+                                            <div class="col-md-2 col-6 text-center">
+                                                <small class="d-block text-muted mb-1">Preço</small>
+                                                <span class="fw-semibold text-white">R$ <?= number_format($item['preco'], 2, ',', '.') ?></span>
                                             </div>
                                             
                                             <!-- Quantidade -->
-                                            <div class="col-md-2 col-6">
-                                                <div class="quantity-controls d-flex align-items-center justify-content-center">
+                                            <div class="col-md-3 col-6">
+                                                <small class="d-block text-muted mb-1 text-center">Quantidade</small>
+                                                <div class="quantity-controls d-flex align-items-center justify-content-center gap-1">
                                                     <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-action="decrease">
                                                         <i class="fas fa-minus"></i>
                                                     </button>
-                                                    <input type="number" class="form-control form-control-sm quantity-input mx-2 text-center" 
+                                                    <input type="number" class="form-control form-control-sm quantity-input text-center" 
                                                            value="<?= $item['quantidade'] ?>" min="1" max="99" style="width: 60px;">
                                                     <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-action="increase">
                                                         <i class="fas fa-plus"></i>
@@ -98,11 +98,14 @@
                                             
                                             <!-- Subtotal e ações -->
                                             <div class="col-md-2 col-12">
-                                                <div class="d-flex flex-column align-items-end">
-                                                    <span class="fw-bold subtotal mb-2">R$ <?= number_format($item['subtotal'], 2, ',', '.') ?></span>
-                                                    <button type="button" class="btn btn-outline-danger btn-sm remove-item" 
-                                                            title="Remover item">
-                                                        <i class="fas fa-trash"></i>
+                                                <div class="d-flex flex-column align-items-end gap-3">
+                                                    <div class="text-end">
+                                                        <small class="d-block text-muted mb-1">Subtotal</small>
+                                                        <span class="fw-bold subtotal text-white fs-5">R$ <?= number_format($item['subtotal'], 2, ',', '.') ?></span>
+                                                    </div>
+                                                    <button type="button" class="btn btn-danger btn-sm remove-item" 
+                                                            title="Remover item do carrinho">
+                                                        <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -166,13 +169,24 @@
                                     <span class="fw-bold text-primary fs-5" id="totalValue">R$ <?= number_format($total, 2, ',', '.') ?></span>
                                 </div>
                                 
-                                <div class="d-grid gap-2 mt-4">
+                                <!-- Calcular Frete -->
+                                <div class="frete-calculator mb-3">
+                                    <label class="form-label text-white fw-semibold">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Calcular Frete
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="cepInput" placeholder="Digite seu CEP" maxlength="9">
+                                        <button class="btn btn-outline-secondary" type="button" id="btnCalcularFrete">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                    <div id="freteResult" class="mt-2"></div>
+                                </div>
+
+                                <div class="d-grid gap-2">
                                     <a class="btn btn-primary btn-lg" href="<?= BASE_URL ?>/checkout">
                                         <i class="fas fa-lock me-2"></i>Finalizar Compra
                                     </a>
-                                    <button class="btn btn-outline-secondary" type="button">
-                                        <i class="fas fa-calculator me-2"></i>Calcular Frete
-                                    </button>
                                 </div>
                                 
                                 <!-- Segurança -->
@@ -417,23 +431,58 @@
     color: #e53e3e;
     font-weight: 700;
     font-size: 1.2rem;
+    text-shadow: 0 0 10px rgba(229, 62, 62, 0.3);
 }
 
 .remove-item {
-    background: rgba(220, 53, 69, 0.1);
-    border: 1px solid rgba(220, 53, 69, 0.3);
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.15), rgba(220, 53, 69, 0.25));
+    border: 1px solid rgba(220, 53, 69, 0.4);
     color: #dc3545;
-    border-radius: 12px;
-    width: 40px;
-    height: 40px;
-    transition: all 0.3s ease;
+    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.remove-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.remove-item i {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
 }
 
 .remove-item:hover {
-    background: #dc3545;
+    border-color: #dc3545;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+}
+
+.remove-item:hover::before {
+    opacity: 1;
+}
+
+.remove-item:hover i {
     color: white;
-    transform: scale(1.1);
-    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    transform: scale(1.1) rotate(-10deg);
+}
+
+.remove-item:active {
+    transform: translateY(0) scale(0.95);
 }
 
 /* === RESUMO DO PEDIDO === */
@@ -731,116 +780,83 @@
 </style>
 
 <script>
-// JavaScript para funcionalidades do carrinho
+// CARRINHO - Controles de quantidade e remoção (delegação simples)
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Atualizar quantidade
-    document.querySelectorAll('.quantity-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const cartItem = this.closest('.cart-item');
+    const container = document.querySelector('.cart-items-container');
+    if (!container) return;
+
+    container.addEventListener('click', function (e) {
+        const cartItem = e.target.closest('.cart-item');
+        if (!cartItem) return;
+
+        const quantityBtn = e.target.closest('.quantity-btn');
+        const removeBtn   = e.target.closest('.remove-item');
+
+        // Botões + e -
+        if (quantityBtn) {
+            e.preventDefault();
             const input = cartItem.querySelector('.quantity-input');
-            const action = this.dataset.action;
-            let currentValue = parseInt(input.value);
-            
-            if (action === 'increase') {
-                input.value = Math.min(currentValue + 1, 99);
-            } else if (action === 'decrease' && currentValue > 1) {
-                input.value = Math.max(currentValue - 1, 1);
-            }
-            
-            updateCartItem(cartItem);
-        });
+            if (!input) return;
+
+            let value = parseInt(input.value) || 1;
+            const action = quantityBtn.dataset.action;
+
+            if (action === 'increase' && value < 99) value++;
+            if (action === 'decrease' && value > 1)  value--;
+
+            input.value = value;
+            updateCart(cartItem, value);
+            return;
+        }
+
+        // Botão remover
+        if (removeBtn) {
+            e.preventDefault();
+            if (!confirm('Deseja remover este item do carrinho?')) return;
+            removeFromCart(cartItem);
+            return;
+        }
     });
-    
-    // Input de quantidade
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', function() {
-            const cartItem = this.closest('.cart-item');
-            const value = Math.max(1, Math.min(99, parseInt(this.value) || 1));
-            this.value = value;
-            updateCartItem(cartItem);
-        });
-    });
-    
-    // Remover item
-    document.querySelectorAll('.remove-item').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const cartItem = this.closest('.cart-item');
-            removeCartItem(cartItem);
-        });
-    });
-    
-    // Limpar carrinho
+
     document.getElementById('limparCarrinho')?.addEventListener('click', function() {
         if (confirm('Tem certeza que deseja limpar todo o carrinho?')) {
             clearCart();
         }
     });
-    
-    // Funções AJAX
-    function updateCartItem(cartItem) {
-        const itemKey = cartItem.dataset.key;
-        const quantidade = cartItem.querySelector('.quantity-input').value;
-        
+
+    function updateCart(cartItem, quantidade) {
+        const itemKey = cartItem.getAttribute('data-key');
         fetch('<?= BASE_URL ?>/carrinho/atualizar', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `item_key=${encodeURIComponent(itemKey)}&quantidade=${quantidade}`
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
             if (data.success) {
                 updateCartUI(data);
                 updateItemSubtotal(cartItem, quantidade);
-                showMessage(data.message, 'success');
-            } else {
-                showMessage(data.message, 'error');
             }
-        })
-        .catch(error => {
-            showMessage('Erro ao atualizar carrinho', 'error');
         });
     }
-    
-    function removeCartItem(cartItem) {
-        const itemKey = cartItem.dataset.key;
-        
+
+    function removeFromCart(cartItem) {
+        const itemKey = cartItem.getAttribute('data-key');
         fetch('<?= BASE_URL ?>/carrinho/remover', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `item_key=${encodeURIComponent(itemKey)}`
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
             if (data.success) {
-                cartItem.style.transition = 'all 0.3s ease';
-                cartItem.style.opacity = '0';
-                cartItem.style.transform = 'translateX(-100%)';
-                
-                setTimeout(() => {
-                    cartItem.remove();
-                    updateCartUI(data);
-                    
-                    // Verificar se carrinho ficou vazio
-                    if (data.totalItens === 0) {
-                        location.reload();
-                    }
-                }, 300);
-                
-                showMessage(data.message, 'success');
-            } else {
-                showMessage(data.message, 'error');
+                cartItem.remove();
+                updateCartUI(data);
+                if (data.totalItens === 0) location.reload();
             }
-        })
-        .catch(error => {
-            showMessage('Erro ao remover item', 'error');
         });
     }
-    
+
     function clearCart() {
         fetch('<?= BASE_URL ?>/carrinho/limpar', {
             method: 'POST',
@@ -921,5 +937,66 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 3000);
     }
+
+    // Calcular Frete
+    const cepInput = document.getElementById('cepInput');
+    const btnCalcularFrete = document.getElementById('btnCalcularFrete');
+    const freteResult = document.getElementById('freteResult');
+
+    // Máscara de CEP
+    cepInput?.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 5) {
+            value = value.slice(0, 5) + '-' + value.slice(5, 8);
+        }
+        e.target.value = value;
+    });
+
+    btnCalcularFrete?.addEventListener('click', async function() {
+        const cep = cepInput.value.replace(/\D/g, '');
+        
+        if (cep.length !== 8) {
+            freteResult.innerHTML = '<small class="text-danger">CEP inválido</small>';
+            return;
+        }
+
+        freteResult.innerHTML = '<small class="text-muted">Calculando...</small>';
+
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await response.json();
+            
+            if (data.erro) {
+                freteResult.innerHTML = '<small class="text-danger">CEP não encontrado</small>';
+                return;
+            }
+
+            // Simula valores de frete baseados na região
+            const uf = data.uf;
+            let valorFrete = 0;
+            let prazo = 0;
+
+            if (['SP', 'RJ', 'MG'].includes(uf)) {
+                valorFrete = 15.90;
+                prazo = 3;
+            } else if (['PR', 'SC', 'RS', 'ES'].includes(uf)) {
+                valorFrete = 22.90;
+                prazo = 5;
+            } else {
+                valorFrete = 35.90;
+                prazo = 7;
+            }
+
+            freteResult.innerHTML = `
+                <div class="frete-info">
+                    <small class="text-success d-block fw-semibold">✓ ${data.localidade} - ${uf}</small>
+                    <small class="text-white d-block mt-1">Frete: <strong>R$ ${valorFrete.toFixed(2).replace('.', ',')}</strong></small>
+                    <small class="text-muted d-block">Entrega em ${prazo} dias úteis</small>
+                </div>
+            `;
+        } catch (error) {
+            freteResult.innerHTML = '<small class="text-danger">Erro ao calcular frete</small>';
+        }
+    });
 });
 </script>
