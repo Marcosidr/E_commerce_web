@@ -36,10 +36,10 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
                 <?php foreach ($pedidos as $o): ?>
                   <tr>
                     <td>#<?= (int)$o['id'] ?></td>
-                    <td><?= htmlspecialchars($o['user_id']) ?></td>
+                    <td><?= htmlspecialchars($o['usuario_id']) ?></td>
                     <td><?= htmlspecialchars($o['status'] ?? '-') ?></td>
-                    <td>R$ <?= number_format((float)($o['total_amount'] ?? 0),2,',','.') ?></td>
-                    <td><?= htmlspecialchars($o['created_at'] ?? '-') ?></td>
+                    <td>R$ <?= number_format((float)($o['total'] ?? 0),2,',','.') ?></td>
+                    <td><?= htmlspecialchars($o['criado_em'] ?? '-') ?></td>
                     <td class="text-end"><a class="btn btn-sm btn-outline-light" href="<?= BASE_URL ?>/dashboard/pedidos/<?= (int)$o['id'] ?>">Ver</a></td>
                   </tr>
                 <?php endforeach; ?>

@@ -14,7 +14,7 @@
         } elseif (!empty($filters['category'])) {
           foreach ($categories as $cat) {
             if ($cat['id'] == $filters['category']) {
-              $selectedCategoryName = $cat['name'];
+              $selectedCategoryName = $cat['nome'];
               $pageTitle = $selectedCategoryName;
               break;
             }
@@ -67,7 +67,7 @@
               <?php foreach ($categories as $cat): ?>
                 <label class="d-flex align-items-center gap-2">
                   <input type="radio" name="category" value="<?= $cat['id'] ?>" class="form-check-input" <?= ($filters['category'] ?? '') == $cat['id'] ? 'checked' : '' ?>>
-                  <span><?= htmlspecialchars($cat['name']) ?></span>
+                  <span><?= htmlspecialchars($cat['nome']) ?></span>
                 </label>
               <?php endforeach; ?>
               <label class="d-flex align-items-center gap-2">
@@ -127,22 +127,22 @@
               <div class="col-12 col-sm-6 col-lg-4">
                 <div class="product-card h-100">
                   <div class="product-image position-relative">
-                    <img src="<?= getProductImageUrl($product['id']) ?>" alt="<?= sanitizeString($product['name']) ?>" class="img-fluid">
+                    <img src="<?= getProductImageUrl($product['id']) ?>" alt="<?= sanitizeString($product['nome']) ?>" class="img-fluid">
                     <div class="product-badge">
                       <span class="badge bg-secondary"><?= strtoupper($product['category_name'] ?? 'URBAN STYLE') ?></span>
                     </div>
                     <div class="product-overlay">
-                      <a href="<?= BASE_URL ?>/produto/<?= $product['id'] ?>" class="btn btn-primary btn-sm">
+                      <button class="btn btn-primary btn-sm quick-view-btn" data-product-id="<?= $product['id'] ?>">
                         <i class="fas fa-eye"></i>
-                      </a>
+                      </button>
                       <button class="btn btn-secondary btn-sm add-to-cart" data-product-id="<?= $product['id'] ?>">
                         <i class="fas fa-cart-plus"></i>
                       </button>
                     </div>
                   </div>
                   <div class="product-info p-3">
-                    <h5 class="product-title mb-2"><?= sanitizeString($product['name']) ?></h5>
-                    <p class="product-price h5 text-primary mb-0"><?= formatPrice($product['price']) ?></p>
+                    <h5 class="product-title mb-2"><?= sanitizeString($product['nome']) ?></h5>
+                    <p class="product-price h5 text-primary mb-0"><?= formatPrice($product['preco']) ?></p>
                   </div>
                 </div>
               </div>

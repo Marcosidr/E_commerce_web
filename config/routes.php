@@ -21,6 +21,9 @@ $router->add('/^newsletter$/', 'Home', 'newsletter');
 $router->add('/^catalogo$/', 'Product', 'catalogo');
 $router->add('/^produto\/(?P<id>\d+)$/', 'Product', 'produto');
 
+// API - Produtos
+$router->add('/^api\/product\/(?P<id>\d+)$/', 'Api', 'product');
+
 // Redirecionamentos para catálogo com filtros (compatibilidade)
 $router->add('/^categoria\/(?P<category_slug>[a-z0-9-]+)$/', 'Product', 'redirectToCategory');
 

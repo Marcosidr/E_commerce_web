@@ -14,9 +14,9 @@ class Users
 
     public function getByEmail(string $email): ?object
     {
-        $sql = 'SELECT id, name, email, email_verified_at, password, phone, birth_date, gender, created_at, updated_at
-                FROM users
-                WHERE active = 1 AND email = :email LIMIT 1';
+        $sql = 'SELECT id, nome, email, email_verificado_em, senha, telefone, data_nascimento, genero, criado_em, atualizado_em
+            FROM usuarios
+            WHERE ativo = 1 AND email = :email LIMIT 1';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':email', $email);
         $stmt->execute();
@@ -29,7 +29,7 @@ class Users
      */
     public function emailExists(string $email): bool
     {
-        $sql = 'SELECT COUNT(*) FROM users WHERE email = :email';
+        $sql = 'SELECT COUNT(*) FROM usuarios WHERE email = :email';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':email', $email);
         $stmt->execute();
@@ -42,16 +42,16 @@ class Users
     public function create(array $data): ?object
     {
         try {
-            $sql = 'INSERT INTO users (name, email, password, phone, birth_date, gender, newsletter, sms_marketing, created_at, updated_at, active) 
-                    VALUES (:name, :email, :password, :phone, :birth_date, :gender, :newsletter, :sms_marketing, NOW(), NOW(), 1)';
+                $sql = 'INSERT INTO usuarios (nome, email, senha, telefone, data_nascimento, genero, newsletter, sms_marketing, criado_em, atualizado_em, ativo) 
+                    VALUES (:nome, :email, :senha, :telefone, :data_nascimento, :genero, :newsletter, :sms_marketing, NOW(), NOW(), 1)';
             
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(':name', $data['name']);
+            $stmt->bindValue(':nome', $data['name']);
             $stmt->bindValue(':email', $data['email']);
-            $stmt->bindValue(':password', $data['password']);
-            $stmt->bindValue(':phone', $data['telefone'] ?? null);
-            $stmt->bindValue(':birth_date', $data['data_nascimento'] ?? null);
-            $stmt->bindValue(':gender', $data['sexo'] ?? null);
+            $stmt->bindValue(':senha', $data['password']);
+            $stmt->bindValue(':telefone', $data['telefone'] ?? null);
+            $stmt->bindValue(':data_nascimento', $data['data_nascimento'] ?? null);
+            $stmt->bindValue(':genero', $data['sexo'] ?? null);
             $stmt->bindValue(':newsletter', $data['newsletter'] ?? 0, PDO::PARAM_INT);
             $stmt->bindValue(':sms_marketing', $data['sms_marketing'] ?? 0, PDO::PARAM_INT);
             
@@ -72,9 +72,9 @@ class Users
      */
     public function getById(int $id): ?object
     {
-        $sql = 'SELECT id, name, email, email_verified_at, password, phone, birth_date, gender, newsletter, sms_marketing, created_at, updated_at
-                FROM users
-                WHERE active = 1 AND id = :id LIMIT 1';
+        $sql = 'SELECT id, nome, email, email_verificado_em, senha, telefone, data_nascimento, genero, newsletter, sms_marketing, criado_em, atualizado_em
+            FROM usuarios
+            WHERE ativo = 1 AND id = :id LIMIT 1';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -106,7 +106,7 @@ class Users
             $params = [':id' => $id];
             
             foreach ($data as $key => $value) {
-                if (in_array($key, ['name', 'email', 'phone', 'birth_date', 'gender', 'newsletter', 'sms_marketing'])) {
+                if (in_array($key, ['nome', 'email', 'telefone', 'data_nascimento', 'genero', 'newsletter', 'sms_marketing'])) {
                     $fields[] = "$key = :$key";
                     $params[":$key"] = $value;
                 }
@@ -116,8 +116,8 @@ class Users
                 return false;
             }
             
-            $fields[] = 'updated_at = NOW()';
-            $sql = 'UPDATE users SET ' . implode(', ', $fields) . ' WHERE id = :id';
+            $fields[] = 'atualizado_em = NOW()';
+            $sql = 'UPDATE usuarios SET ' . implode(', ', $fields) . ' WHERE id = :id';
             
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute($params);
@@ -133,7 +133,7 @@ class Users
      */
     public function deactivate(int $id): bool
     {
-        $sql = 'UPDATE users SET active = 0, updated_at = NOW() WHERE id = :id';
+        $sql = 'UPDATE usuarios SET ativo = 0, atualizado_em = NOW() WHERE id = :id';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();

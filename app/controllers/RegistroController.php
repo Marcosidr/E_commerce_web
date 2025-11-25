@@ -88,7 +88,7 @@ class RegistroController extends Controller
                 $_SESSION['success'] = 'Conta criada com sucesso!';
                 $_SESSION['users'] = [
                     'id' => $userData->id,
-                    'nome' => $nome . ' ' . $sobrenome,
+                    'nome' => $userData->nome,
                     'email' => $email
                 ];
                 header('Location: ' . BASE_URL . '/');

@@ -10,14 +10,14 @@ use App\Core\Model;
  */
 class Product extends Model
 {
-    protected $table = 'products';
+    protected $table = 'produtos';
     
     /**
      * Lista produtos para administração (campos essenciais)
      */
     public function getAllForAdmin($limit = 100, $offset = 0)
     {
-        $sql = "SELECT id, name, price, featured, active, stock_quantity FROM {$this->table} ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+        $sql = "SELECT id, nome, preco, destaque, ativo, estoque FROM {$this->table} ORDER BY criado_em DESC LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
@@ -30,10 +30,10 @@ class Product extends Model
      */
     public function setFeatured(int $id, bool $featured): bool
     {
-        $sql = "UPDATE {$this->table} SET featured = :featured, updated_at = NOW() WHERE id = :id";
+        $sql = "UPDATE {$this->table} SET destaque = :destaque, atualizado_em = NOW() WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         $val = $featured ? 1 : 0;
-        $stmt->bindParam(':featured', $val, \PDO::PARAM_INT);
+        $stmt->bindParam(':destaque', $val, \PDO::PARAM_INT);
         $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
         return $stmt->execute();
     }
@@ -43,7 +43,7 @@ class Product extends Model
      */
     public function updateBasic(int $id, array $data): bool
     {
-        $allowed = ['name','price','brand','stock_quantity','active','category_id','featured'];
+        $allowed = ['nome','preco','marca','estoque','ativo','categoria_id','destaque'];
         $payload = [];
         foreach ($allowed as $field) {
             if (array_key_exists($field, $data)) {
@@ -52,7 +52,7 @@ class Product extends Model
         }
         if (empty($payload)) return false;
         // garante updated_at
-        $payload['updated_at'] = date('Y-m-d H:i:s');
+        $payload['atualizado_em'] = date('Y-m-d H:i:s');
         return (bool) $this->update($id, $payload);
     }
     
@@ -61,11 +61,11 @@ class Product extends Model
      */
     public function getFeatured($limit = 4)
     {
-        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
-                FROM {$this->table} p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.featured = 1 AND p.active = 1 
-                ORDER BY p.created_at DESC 
+        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
+            FROM {$this->table} p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            WHERE p.destaque = 1 AND p.ativo = 1 
+            ORDER BY p.criado_em DESC 
                 LIMIT :limit";
         
         $stmt = $this->db->prepare($sql);
@@ -79,11 +79,11 @@ class Product extends Model
      */
     public function getActive($limit = 12, $offset = 0)
     {
-        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
-                FROM {$this->table} p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.active = 1 
-                ORDER BY p.created_at DESC 
+        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
+            FROM {$this->table} p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            WHERE p.ativo = 1 
+            ORDER BY p.criado_em DESC 
                 LIMIT :limit OFFSET :offset";
         
         $stmt = $this->db->prepare($sql);
@@ -98,7 +98,7 @@ class Product extends Model
      */
     public function countActive()
     {
-        return $this->count('active = 1');
+        return $this->count('ativo = 1');
     }
     
     /**
@@ -106,11 +106,11 @@ class Product extends Model
      */
     public function getByCategory($categoryId, $limit = 12, $offset = 0)
     {
-        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
-                FROM {$this->table} p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.category_id = :category_id AND p.active = 1 
-                ORDER BY p.created_at DESC 
+        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
+            FROM {$this->table} p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            WHERE p.categoria_id = :category_id AND p.ativo = 1 
+            ORDER BY p.criado_em DESC 
                 LIMIT :limit OFFSET :offset";
         
         $stmt = $this->db->prepare($sql);
@@ -126,7 +126,7 @@ class Product extends Model
      */
     public function countByCategory($categoryId)
     {
-        return $this->count("category_id = {$categoryId} AND active = 1");
+        return $this->count("categoria_id = {$categoryId} AND ativo = 1");
     }
     
     /**
@@ -134,12 +134,12 @@ class Product extends Model
      */
     public function getRelated($categoryId, $excludeId, $limit = 4)
     {
-        $sql = "SELECT p.*, c.name as category_name 
-                FROM {$this->table} p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.category_id = :category_id 
+        $sql = "SELECT p.*, c.nome as category_name 
+            FROM {$this->table} p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            WHERE p.categoria_id = :category_id 
                 AND p.id != :exclude_id 
-                AND p.active = 1 
+            AND p.ativo = 1 
                 ORDER BY RAND() 
                 LIMIT :limit";
         
@@ -156,12 +156,12 @@ class Product extends Model
      */
     public function search($term)
     {
-        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
-                FROM {$this->table} p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE (p.name LIKE :term OR p.description LIKE :term) 
-                AND p.active = 1 
-                ORDER BY p.name ASC";
+        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
+            FROM {$this->table} p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            WHERE (p.nome LIKE :term OR p.descricao LIKE :term) 
+            AND p.ativo = 1 
+            ORDER BY p.nome ASC";
         
         $stmt = $this->db->prepare($sql);
         $searchTerm = "%{$term}%";
@@ -180,40 +180,40 @@ class Product extends Model
             return $this->searchWithFilters($filters);
         }
         
-        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
-                FROM {$this->table} p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.active = 1";
+        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
+            FROM {$this->table} p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            WHERE p.ativo = 1";
         $params = [];
 
         if (!empty($filters['category'])) {
-            $sql .= " AND p.category_id = :category";
+            $sql .= " AND p.categoria_id = :category";
             $params['category'] = $filters['category'];
         }
         
         if (!empty($filters['price_min'])) {
-            $sql .= " AND p.price >= :price_min";
+            $sql .= " AND p.preco >= :price_min";
             $params['price_min'] = $filters['price_min'];
         }
         
         if (!empty($filters['price_max'])) {
-            $sql .= " AND p.price <= :price_max";
+            $sql .= " AND p.preco <= :price_max";
             $params['price_max'] = $filters['price_max'];
         }
         
         if (!empty($filters['brand'])) {
-            $sql .= " AND p.brand = :brand";
+            $sql .= " AND p.marca = :brand";
             $params['brand'] = $filters['brand'];
         }
 
         // Ordenação
         switch ($filters['sort'] ?? 'recent') {
             case 'price_asc':
-                $sql .= " ORDER BY p.price ASC"; break;
+                $sql .= " ORDER BY p.preco ASC"; break;
             case 'price_desc':
-                $sql .= " ORDER BY p.price DESC"; break;
+                $sql .= " ORDER BY p.preco DESC"; break;
             default:
-                $sql .= " ORDER BY p.created_at DESC"; break;
+                $sql .= " ORDER BY p.criado_em DESC"; break;
         }
 
         $stmt = $this->db->prepare($sql);
@@ -228,43 +228,43 @@ class Product extends Model
     {
         $searchTerm = "%{$filters['search']}%";
         
-        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
-                FROM {$this->table} p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.active = 1 
-                AND (p.name LIKE ? OR p.description LIKE ?)";
+        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
+            FROM {$this->table} p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            WHERE p.ativo = 1 
+            AND (p.nome LIKE ? OR p.descricao LIKE ?)";
         
         $params = [$searchTerm, $searchTerm];
         
         // Adicionar outros filtros se necessário
         if (!empty($filters['category'])) {
-            $sql .= " AND p.category_id = ?";
+            $sql .= " AND p.categoria_id = ?";
             $params[] = $filters['category'];
         }
         
         if (!empty($filters['brand'])) {
-            $sql .= " AND p.brand = ?";
+            $sql .= " AND p.marca = ?";
             $params[] = $filters['brand'];
         }
         
         if (!empty($filters['price_min'])) {
-            $sql .= " AND p.price >= ?";
+            $sql .= " AND p.preco >= ?";
             $params[] = $filters['price_min'];
         }
         
         if (!empty($filters['price_max'])) {
-            $sql .= " AND p.price <= ?";
+            $sql .= " AND p.preco <= ?";
             $params[] = $filters['price_max'];
         }
         
         // Ordenação
         switch ($filters['sort'] ?? 'recent') {
             case 'price_asc':
-                $sql .= " ORDER BY p.price ASC"; break;
+                $sql .= " ORDER BY p.preco ASC"; break;
             case 'price_desc':
-                $sql .= " ORDER BY p.price DESC"; break;
+                $sql .= " ORDER BY p.preco DESC"; break;
             default:
-                $sql .= " ORDER BY p.created_at DESC"; break;
+                $sql .= " ORDER BY p.criado_em DESC"; break;
         }
         
         $stmt = $this->db->prepare($sql);
@@ -277,11 +277,11 @@ class Product extends Model
      */
     public function getDistinctBrands(): array
     {
-        $sql = "SELECT DISTINCT brand FROM {$this->table} 
-                WHERE brand IS NOT NULL AND brand <> '' 
-                ORDER BY brand ASC";
+        $sql = "SELECT DISTINCT marca FROM {$this->table} 
+            WHERE marca IS NOT NULL AND marca <> '' 
+            ORDER BY marca ASC";
         $stmt = $this->db->query($sql);
-        return array_map(function($row){ return $row['brand']; }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
+        return array_map(function($row){ return $row['marca']; }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
     
     /**
@@ -289,10 +289,10 @@ class Product extends Model
      */
     public function findById($id)
     {
-        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
-                FROM {$this->table} p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                WHERE p.id = :id AND p.active = 1";
+        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
+            FROM {$this->table} p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            WHERE p.id = :id AND p.ativo = 1";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
         $stmt->execute();

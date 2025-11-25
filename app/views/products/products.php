@@ -15,12 +15,12 @@
         <?php foreach ($products as $product): ?>
             <div class="col-md-4 col-sm-6 mb-4">
                 <div class="card h-100">
-                    <img src="<?= $product['image'] ?? BASE_URL . '/images/no-image.jpg' ?>" class="card-img-top" alt="<?= htmlspecialchars($product['name']) ?>">
+                    <img src="<?= getProductImageUrl($product['id']) ?>" class="card-img-top" alt="<?= htmlspecialchars($product['nome']) ?>">
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title"><?= htmlspecialchars($product['name']) ?></h5>
-                        <p class="card-text flex-grow-1"><?= htmlspecialchars(substr($product['description'] ?? '', 0, 100)) ?>...</p>
+                        <h5 class="card-title"><?= htmlspecialchars($product['nome']) ?></h5>
+                        <p class="card-text flex-grow-1"><?= htmlspecialchars(substr($product['descricao'] ?? '', 0, 100)) ?>...</p>
                         <div class="mt-auto">
-                            <p class="card-text"><strong class="text-primary">R$ <?= number_format($product['price'], 2, ',', '.') ?></strong></p>
+                            <p class="card-text"><strong class="text-primary">R$ <?= number_format($product['preco'], 2, ',', '.') ?></strong></p>
                             <div class="d-flex gap-2">
                                 <a href="/produto/<?= $product['id'] ?>" class="btn btn-primary flex-fill">Ver Detalhes</a>
                                 <button class="btn btn-success add-to-cart" data-product-id="<?= $product['id'] ?>">

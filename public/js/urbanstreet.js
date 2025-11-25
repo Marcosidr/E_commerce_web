@@ -51,16 +51,16 @@ function initProductCards() {
         });
     });
     
-    // Botões "Adicionar ao carrinho"
-    const addToCartButtons = document.querySelectorAll('.add-to-cart');
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
+    // Botões "Adicionar ao carrinho" - Usando delegação de eventos
+    document.addEventListener('click', function(e) {
+        const button = e.target.closest('.add-to-cart');
+        if (button) {
             e.preventDefault();
             e.stopPropagation();
             
-            const productId = this.dataset.productId;
-            addToCart(productId, this);
-        });
+            const productId = button.dataset.productId;
+            addToCart(productId, button);
+        }
     });
 }
 

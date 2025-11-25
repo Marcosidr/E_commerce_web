@@ -23,6 +23,8 @@ class Database
                 $config['password'],
                 $config['options']
             );
+            $this->connection->exec("SET NAMES 'utf8mb4'");
+            $this->connection->exec("SET CHARACTER SET utf8mb4");
         } catch (\PDOException $e) {
             error_log('Database connection failed: ' . $e->getMessage());
             throw new \Exception('Erro na conexão com o banco de dados');

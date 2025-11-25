@@ -13,90 +13,233 @@ if ($flash) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Entrar — UrbanStreet</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="<?= BASE_URL ?>/css/urbanstreet.css">
+
+  <style>
+    body {
+      background: radial-gradient(circle at top right, #111 0%, #000 80%);
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #fff;
+    }
+
+    .card-login {
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 35px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 22px;
+      backdrop-filter: blur(10px);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .9rem;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.35) !important;
+      color: #fff !important;
+      transition: .2s;
+      text-decoration: none;
+    }
+    .back-btn:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .form-control {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding-left: 45px;
+      padding-right: 45px;
+      height: 48px;
+      border-radius: 12px;
+    }
+    .form-control::placeholder {
+      color: rgba(255,255,255,0.55);
+    }
+    .form-control:focus {
+      background: rgba(255,255,255,0.12);
+      border-color: #e53e3e;
+      color: #fff;
+      box-shadow: 0 0 0 0.2rem rgba(229, 62, 62, 0.25);
+    }
+
+    .input-icon {
+      position: absolute !important;
+      left: 15px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+      z-index: 5 !important;
+      pointer-events: none !important;
+      font-size: 18px !important;
+      display: block !important;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, #ff3b3b, #b30000);
+      border: none;
+      border-radius: 12px;
+      height: 48px;
+      font-weight: 600;
+      transition: .25s;
+      color: #fff;
+    }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 60, 60, 0.35);
+    }
+
+    .toggle-password {
+      position: absolute !important;
+      right: 15px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      background: none !important;
+      border: none !important;
+      color: rgba(255,255,255,0.7) !important;
+      cursor: pointer !important;
+      transition: color 0.2s;
+      z-index: 10 !important;
+      padding: 5px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .toggle-password:hover {
+      color: rgba(255,255,255,1) !important;
+    }
+    .toggle-password i {
+      font-size: 18px !important;
+      display: block !important;
+    }
+
+    .divider {
+      margin: 24px 0;
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      position: relative;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: rgba(255,255,255,0.2);
+    }
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+
+    .form-check-input:checked {
+      background-color: #e53e3e;
+      border-color: #e53e3e;
+    }
+
+    .alert {
+      border-radius: 12px;
+      border: none;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+    .alert-danger {
+      background: rgba(220, 53, 69, 0.1);
+      color: #ff6b7a;
+      border-left: 4px solid #dc3545;
+    }
+    .alert-success {
+      background: rgba(40, 167, 69, 0.1);
+      color: #6bcf7e;
+      border-left: 4px solid #28a745;
+    }
+  </style>
 </head>
 
-<body class="login-page">
-  <main class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-11 col-sm-10 col-md-7 col-lg-5 col-xxl-4">
-        <div class="card-form shadow-sm p-4 p-md-5">
-          <a href="<?= BASE_URL ?>" class="btn-back"><i class="bi bi-arrow-left"></i> Voltar à loja</a>
-          <div class="text-center mb-4">
-            <a class="navbar-brand logo fw-bold fs-3 d-inline-flex align-items-center gap-1 text-decoration-none" href="<?= BASE_URL ?>">
-              <span class="urban">URBAN</span><span class="street">STREET</span>
-            </a>
-           
-            <h2 class="mt-3 mb-1" style="font-size:1.6rem; font-weight:800;">Bem-vindo de volta</h2>
-            <p class="text-muted m-0" style="font-size:.95rem;">Entre para continuar</p>
-          </div>
+<body>
 
-          <?php if (!empty($flash)) : ?>
-            <div class="alert alert-<?= htmlspecialchars($flash['type']) ?>" role="alert">
-              <?= htmlspecialchars($flash['text']) ?>
-            </div>
-          <?php endif; ?>
+  <div class="card-login shadow-lg">
 
-          <form method="POST" action="<?= BASE_URL ?>/login/verify" novalidate>
-            <div class="mb-3">
-              <label for="email" class="form-label">E-mail</label>
-              <div class="position-relative">
-                <span class="input-icon" aria-hidden="true">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z" fill="currentColor"/></svg>
-                </span>
-                <input type="email" id="email" name="email" class="form-control form-control-lg" placeholder="seu@email.com" required>
-              </div>
-            </div>
+    <a href="<?= BASE_URL ?>" class="back-btn mb-4">
+      <i class="bi bi-arrow-left"></i> Voltar à loja
+    </a>
 
-            <div class="mb-2">
-              <label for="senha" class="form-label">Senha</label>
-              <div class="position-relative">
-                <span class="input-icon" aria-hidden="true">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1a5 5 0 0 0-5 5v3H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1h-2V6a5 5 0 0 0-5-5Zm-3 8V6a3 3 0 1 1 6 0v3H9Z" fill="currentColor"/></svg>
-                </span>
-                <input type="password" id="senha" name="password" class="form-control form-control-lg" placeholder="••••••••" required>
-                <button type="button" class="toggle-password" aria-label="Mostrar senha" aria-pressed="false" onclick="togglePassword(this)" title="Mostrar/ocultar senha">
-                  <svg class="icon-eye" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z" fill="currentColor"/></svg>
-                  <svg class="icon-eye-off" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:none"><path d="M2 5.27 3.28 4 20 20.72 18.73 22l-2.4-2.4A11.3 11.3 0 0 1 12 19c-5 0-9.27-3.11-11-7a12.66 12.66 0 0 1 5.06-5.59L2 5.27ZM22.94 12c-.79 1.78-2.1 3.35-3.75 4.54L17.1 15.5A6 6 0 0 0 8.5 6.9l-2-2A12.42 12.42 0 0 1 12 5c5 0 9.27 3.11 11 7Z" fill="currentColor"/></svg>
-                </button>
-              </div>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="form-check">
-                <input type="checkbox" id="remember" name="remember" class="form-check-input">
-                <label for="remember" class="form-check-label">Lembrar-me</label>
-              </div>
-              <a href="#" class="text-decoration-none text-link" style="font-size:.9rem;">Esqueci minha senha</a>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-lg w-100">Entrar</button>
-          </form>
-
-          <div class="divider">ou</div>
-
-          <p class="text-center m-0" style="font-size:.95rem;">
-            Não tem uma conta? <a href="<?= BASE_URL ?>/cadastro">Cadastrar</a>
-          </p>
-        </div>
-      </div>
+    <div class="text-center mb-4">
+      <span class="fw-bold fs-3">
+        <span style="color:#fff;">URBAN</span>
+        <span style="color:#e53e3e;">STREET</span>
+      </span>
+      <h2 class="mt-3 fw-bold">Bem-vindo de volta</h2>
+      <p class="text-secondary m-0">Entre para continuar</p>
     </div>
-  </main>
 
-  <script>
-    function togglePassword(btn){
-      const input = document.getElementById('senha');
-      const show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      btn.setAttribute('aria-pressed', show ? 'true' : 'false');
-      btn.setAttribute('aria-label', show ? 'Ocultar senha' : 'Mostrar senha');
-      const eye = btn.querySelector('.icon-eye');
-      const off = btn.querySelector('.icon-eye-off');
-      eye.style.display = show ? 'none' : 'block';
-      off.style.display = show ? 'block' : 'none';
-    }
-  </script>
+    <?php if (!empty($flash)) : ?>
+      <div class="alert alert-<?= htmlspecialchars($flash['type']) ?>">
+        <?= htmlspecialchars($flash['text']) ?>
+      </div>
+    <?php endif; ?>
+
+    <form method="POST" action="<?= BASE_URL ?>/login/verify">
+
+      <label class="mb-1">E-mail</label>
+      <div class="position-relative mb-3">
+        <i class="bi bi-envelope input-icon"></i>
+        <input type="email" class="form-control" name="email" required>
+      </div>
+
+      <label class="mb-1">Senha</label>
+      <div class="position-relative mb-2">
+        <i class="bi bi-lock input-icon"></i>
+        <input type="password" class="form-control" id="senha" name="password" required>
+        <button type="button" class="toggle-password" onclick="togglePassword()">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+
+      <div class="d-flex justify-content-between mb-3">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="remember" name="remember">
+          <label for="remember" class="form-check-label">Lembrar-me</label>
+        </div>
+        <a href="#" class="text-danger text-decoration-none">Esqueci minha senha</a>
+      </div>
+
+      <button class="btn btn-login w-100">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Entrar
+      </button>
+
+    </form>
+
+    <div class="divider">ou</div>
+
+    <p class="text-center">
+      Não tem conta?
+      <a href="<?= BASE_URL ?>/cadastro" class="text-danger fw-semibold text-decoration-none">Cadastrar</a>
+    </p>
+
+  </div>
+
+<script>
+  function togglePassword() {
+    const field = document.getElementById("senha");
+    const btn = document.querySelector(".toggle-password");
+    const isPassword = field.type === "password";
+    
+    field.type = isPassword ? "text" : "password";
+    btn.innerHTML = isPassword ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+  }
+</script>
+
 </body>
 </html>

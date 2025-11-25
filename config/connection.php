@@ -11,11 +11,14 @@
 
         public static function conect() {
             try {
-                return new PDO(
-                    "mysql:host=" . self::$host . ";dbname=" . self::$dbname . ";charset=utf8",
+                $pdo = new PDO(
+                    "mysql:host=" . self::$host . ";dbname=" . self::$dbname . ";charset=utf8mb4",
                     self::$user,
-                    self::$pass
-);
+                    self::$pass,
+                    [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"]
+                );
+                $pdo->exec("SET CHARACTER SET utf8mb4");
+                return $pdo;
         } 
 
             catch(PDOException $e) {

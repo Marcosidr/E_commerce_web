@@ -28,7 +28,7 @@ class DashboardOrdersController extends Controller
     {
         // Lista simples de pedidos (se tabela existir)
         try {
-            $stmt = $this->db->query("SELECT id, user_id, status, total_amount, created_at FROM orders ORDER BY created_at DESC LIMIT 100");
+            $stmt = $this->db->query("SELECT p.id, p.usuario_id, p.status, p.total, p.criado_em FROM pedidos p ORDER BY p.criado_em DESC LIMIT 100");
             $pedidos = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Throwable $e) {
             $pedidos = [];
@@ -41,13 +41,19 @@ class DashboardOrdersController extends Controller
         $id = (int)$id;
         $pedido = null; $itens = [];
         try {
-            $stmt = $this->db->prepare("SELECT * FROM orders WHERE id = :id LIMIT 1");
+            $stmt = $this->db->prepare("SELECT p.*, u.nome AS nome_cliente, u.email AS email_cliente 
+                                         FROM pedidos p 
+                                         LEFT JOIN usuarios u ON u.id = p.usuario_id 
+                                         WHERE p.id = :id LIMIT 1");
             $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
             $stmt->execute();
             $pedido = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             if ($pedido) {
-                $s2 = $this->db->prepare("SELECT oi.*, p.name as product_name FROM order_items oi LEFT JOIN products p ON p.id = oi.product_id WHERE oi.order_id = :id");
+                $s2 = $this->db->prepare("SELECT i.*, pr.nome as nome_produto 
+                                           FROM itens_pedido i 
+                                           LEFT JOIN produtos pr ON pr.id = i.produto_id 
+                                           WHERE i.pedido_id = :id");
                 $s2->bindValue(':id', $id, \PDO::PARAM_INT);
                 $s2->execute();
                 $itens = $s2->fetchAll(\PDO::FETCH_ASSOC);

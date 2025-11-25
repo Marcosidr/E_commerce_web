@@ -3,87 +3,82 @@
 USE urbanstreet_db;
 
 -- ====================================================
--- 1. TRIGGER PARA AUDITORIA DE ALTERAÇÃO DE PREÇO
+-- 1. TABELA E TRIGGER DE AUDITORIA DE PREÇO (PRODUTOS)
 -- ====================================================
 
--- Tabela de auditoria
-CREATE TABLE IF NOT EXISTS product_price_audit (
+CREATE TABLE IF NOT EXISTS auditoria_preco_produto (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    old_price DECIMAL(10,2),
-    new_price DECIMAL(10,2),
-    changed_by VARCHAR(100),
-    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_product (product_id),
-    INDEX idx_date (changed_at)
+    produto_id INT NOT NULL,
+    preco_antigo DECIMAL(10,2),
+    preco_novo DECIMAL(10,2),
+    alterado_por VARCHAR(100),
+    alterado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_auditoria_produto (produto_id),
+    INDEX idx_auditoria_data (alterado_em)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Trigger para registrar alterações de preço
 DELIMITER $$
 
-CREATE TRIGGER trg_product_price_audit
-AFTER UPDATE ON products
+CREATE TRIGGER trg_auditoria_preco_produto
+AFTER UPDATE ON produtos
 FOR EACH ROW
 BEGIN
-    IF OLD.price != NEW.price THEN
-        INSERT INTO product_price_audit (product_id, old_price, new_price, changed_by)
-        VALUES (NEW.id, OLD.price, NEW.price, USER());
+    IF OLD.preco <> NEW.preco THEN
+        INSERT INTO auditoria_preco_produto (produto_id, preco_antigo, preco_novo, alterado_por)
+        VALUES (NEW.id, OLD.preco, NEW.preco, USER());
     END IF;
 END$$
 
 DELIMITER ;
 
 -- ====================================================
--- 2. PROCEDURE PARA INSERÇÃO MASSIVA DE DADOS
+-- 2. PROCEDURE PARA INSERÇÃO MASSIVA DE PRODUTOS TESTE
 -- ====================================================
 
 DELIMITER $$
 
-CREATE PROCEDURE sp_insert_bulk_products(
-    IN p_quantity INT,
-    IN p_category_id INT
+CREATE PROCEDURE sp_inserir_produtos_teste(
+    IN p_qtd INT,
+    IN p_categoria_id INT
 )
 BEGIN
     DECLARE i INT DEFAULT 1;
-    DECLARE v_name VARCHAR(255);
-    DECLARE v_price DECIMAL(10,2);
-    DECLARE v_stock INT;
+    DECLARE v_nome VARCHAR(255);
+    DECLARE v_preco DECIMAL(10,2);
+    DECLARE v_estoque INT;
     
-    -- Validação
-    IF p_quantity <= 0 OR p_quantity > 1000 THEN
+    IF p_qtd <= 0 OR p_qtd > 1000 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Quantidade deve estar entre 1 e 1000';
     END IF;
     
-    -- Loop para inserção
-    WHILE i <= p_quantity DO
-        SET v_name = CONCAT('Produto Teste ', LPAD(i, 5, '0'));
-        SET v_price = ROUND(50 + (RAND() * 450), 2); -- Entre R$50 e R$500
-        SET v_stock = FLOOR(10 + (RAND() * 90)); -- Entre 10 e 100
+    WHILE i <= p_qtd DO
+        SET v_nome = CONCAT('Produto Teste ', LPAD(i, 5, '0'));
+        SET v_preco = ROUND(50 + (RAND() * 450), 2);
+        SET v_estoque = FLOOR(10 + (RAND() * 90));
         
-        INSERT INTO products (
-            name, 
-            slug, 
-            description, 
-            price, 
-            category_id, 
-            brand, 
-            stock_quantity, 
-            active,
-            featured,
-            created_at,
-            updated_at
-        )
-        VALUES (
-            v_name,
-            LOWER(REPLACE(v_name, ' ', '-')),
-            CONCAT('Descrição automática do ', v_name),
-            v_price,
-            p_category_id,
+        INSERT INTO produtos (
+            nome,
+            slug,
+            descricao,
+            preco,
+            categoria_id,
+            marca,
+            estoque,
+            ativo,
+            destaque,
+            criado_em,
+            atualizado_em
+        ) VALUES (
+            v_nome,
+            LOWER(REPLACE(v_nome, ' ', '-')),
+            CONCAT('Descrição automática do ', v_nome),
+            v_preco,
+            p_categoria_id,
             'Marca Teste',
-            v_stock,
+            v_estoque,
             1,
-            IF(RAND() > 0.7, 1, 0), -- 30% de chance de ser destaque
+            IF(RAND() > 0.7, 1, 0),
             NOW(),
             NOW()
         );
@@ -91,42 +86,35 @@ BEGIN
         SET i = i + 1;
     END WHILE;
     
-    SELECT CONCAT('Inseridos ', p_quantity, ' produtos com sucesso!') AS resultado;
+    SELECT CONCAT('Inseridos ', p_qtd, ' produtos com sucesso!') AS resultado;
 END$$
 
 DELIMITER ;
 
 -- ====================================================
--- 3. ÍNDICES PARA OTIMIZAÇÃO DE CONSULTAS
+-- 3. ÍNDICES PARA OTIMIZAÇÃO DE CONSULTAS (NOVO ESQUEMA)
 -- ====================================================
 
--- Índice composto para busca de produtos ativos por categoria
-CREATE INDEX idx_products_category_active 
-ON products(category_id, active, created_at DESC);
+CREATE INDEX idx_produtos_categoria_ativo 
+ON produtos(categoria_id, ativo, criado_em DESC);
 
--- Índice para busca por nome (full-text search)
-CREATE FULLTEXT INDEX idx_products_name_description 
-ON products(name, description);
+CREATE FULLTEXT INDEX idx_produtos_nome_descricao 
+ON produtos(nome, descricao);
 
--- Índice para produtos em destaque
-CREATE INDEX idx_products_featured 
-ON products(featured, active, created_at DESC);
+CREATE INDEX idx_produtos_destaque 
+ON produtos(destaque, ativo, criado_em DESC);
 
--- Índice para busca por marca
-CREATE INDEX idx_products_brand 
-ON products(brand);
+CREATE INDEX idx_produtos_marca 
+ON produtos(marca);
 
--- Índice para busca por preço
-CREATE INDEX idx_products_price 
-ON products(price);
+CREATE INDEX idx_produtos_preco 
+ON produtos(preco);
 
--- Índice composto para pedidos por usuário e data
-CREATE INDEX idx_orders_user_date 
-ON orders(user_id, created_at DESC);
+CREATE INDEX idx_pedidos_usuario_data 
+ON pedidos(usuario_id, criado_em DESC);
 
--- Índice para status de pedidos
-CREATE INDEX idx_orders_status 
-ON orders(status, created_at DESC);
+CREATE INDEX idx_pedidos_status 
+ON pedidos(status, criado_em DESC);
 
 -- ====================================================
 -- 4. FUNÇÃO PARA VERIFICAR DISPONIBILIDADE DE ESTOQUE
@@ -134,35 +122,32 @@ ON orders(status, created_at DESC);
 
 DELIMITER $$
 
-CREATE FUNCTION fn_check_stock_availability(
-    p_product_id INT,
-    p_quantity INT
+CREATE FUNCTION fn_verificar_estoque(
+    p_produto_id INT,
+    p_qtd INT
 )
 RETURNS VARCHAR(100)
 DETERMINISTIC
 READS SQL DATA
 BEGIN
-    DECLARE v_current_stock INT;
-    DECLARE v_result VARCHAR(100);
+    DECLARE v_estoque_atual INT;
+    DECLARE v_resultado VARCHAR(100);
     
-    -- Buscar estoque atual
-    SELECT stock_quantity INTO v_current_stock
-    FROM products
-    WHERE id = p_product_id AND active = 1;
+    SELECT estoque INTO v_estoque_atual
+    FROM produtos
+    WHERE id = p_produto_id AND ativo = 1;
     
-    -- Verificar se produto existe
-    IF v_current_stock IS NULL THEN
-        SET v_result = 'PRODUTO_INEXISTENTE';
-    -- Verificar disponibilidade
-    ELSEIF v_current_stock >= p_quantity THEN
-        SET v_result = 'DISPONIVEL';
-    ELSEIF v_current_stock > 0 THEN
-        SET v_result = CONCAT('ESTOQUE_LIMITADO:', v_current_stock);
+    IF v_estoque_atual IS NULL THEN
+        SET v_resultado = 'PRODUTO_INEXISTENTE';
+    ELSEIF v_estoque_atual >= p_qtd THEN
+        SET v_resultado = 'DISPONIVEL';
+    ELSEIF v_estoque_atual > 0 THEN
+        SET v_resultado = CONCAT('ESTOQUE_LIMITADO:', v_estoque_atual);
     ELSE
-        SET v_result = 'INDISPONIVEL';
+        SET v_resultado = 'INDISPONIVEL';
     END IF;
     
-    RETURN v_result;
+    RETURN v_resultado;
 END$$
 
 DELIMITER ;
@@ -173,90 +158,85 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE sp_update_product_stock(
-    IN p_product_id INT,
-    IN p_quantity INT,
-    IN p_operation ENUM('ADD', 'REMOVE')
+CREATE PROCEDURE sp_atualizar_estoque_produto(
+    IN p_produto_id INT,
+    IN p_qtd INT,
+    IN p_operacao ENUM('ADICIONAR','REMOVER')
 )
 BEGIN
-    DECLARE v_current_stock INT;
+    DECLARE v_estoque_atual INT;
     
-    -- Buscar estoque atual
-    SELECT stock_quantity INTO v_current_stock
-    FROM products
-    WHERE id = p_product_id AND active = 1;
+    SELECT estoque INTO v_estoque_atual
+    FROM produtos
+    WHERE id = p_produto_id AND ativo = 1;
     
-    -- Validações
-    IF v_current_stock IS NULL THEN
+    IF v_estoque_atual IS NULL THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Produto não encontrado ou inativo';
     END IF;
     
-    IF p_quantity <= 0 THEN
+    IF p_qtd <= 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Quantidade deve ser maior que zero';
     END IF;
     
-    -- Atualizar estoque
-    IF p_operation = 'ADD' THEN
-        UPDATE products 
-        SET stock_quantity = stock_quantity + p_quantity,
-            updated_at = NOW()
-        WHERE id = p_product_id;
+    IF p_operacao = 'ADICIONAR' THEN
+        UPDATE produtos
+        SET estoque = estoque + p_qtd,
+            atualizado_em = NOW()
+        WHERE id = p_produto_id;
         
-        SELECT CONCAT('Estoque atualizado: +', p_quantity, ' unidades') AS resultado;
-        
-    ELSEIF p_operation = 'REMOVE' THEN
-        IF v_current_stock < p_quantity THEN
+        SELECT CONCAT('Estoque atualizado: +', p_qtd, ' unidades') AS resultado;
+    ELSEIF p_operacao = 'REMOVER' THEN
+        IF v_estoque_atual < p_qtd THEN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Estoque insuficiente para remoção';
         END IF;
         
-        UPDATE products 
-        SET stock_quantity = stock_quantity - p_quantity,
-            updated_at = NOW()
-        WHERE id = p_product_id;
+        UPDATE produtos
+        SET estoque = estoque - p_qtd,
+            atualizado_em = NOW()
+        WHERE id = p_produto_id;
         
-        SELECT CONCAT('Estoque atualizado: -', p_quantity, ' unidades') AS resultado;
+        SELECT CONCAT('Estoque atualizado: -', p_qtd, ' unidades') AS resultado;
     END IF;
 END$$
 
 DELIMITER ;
 
 -- ====================================================
--- 6. VIEW PARA RELATÓRIOS
+-- 6. VIEWS PARA RELATÓRIOS (NOVO ESQUEMA)
 -- ====================================================
 
--- View de produtos com baixo estoque
-CREATE OR REPLACE VIEW vw_low_stock_products AS
+CREATE OR REPLACE VIEW vw_produtos_baixo_estoque AS
 SELECT 
     p.id,
-    p.name,
-    p.brand,
-    c.name AS category,
-    p.stock_quantity,
-    p.price,
-    p.active
-FROM products p
-LEFT JOIN categories c ON p.category_id = c.id
-WHERE p.stock_quantity < 10
-ORDER BY p.stock_quantity ASC;
+    p.nome,
+    p.marca,
+    c.nome AS categoria,
+    p.estoque,
+    p.preco,
+    p.ativo
+FROM produtos p
+LEFT JOIN categorias c ON p.categoria_id = c.id
+WHERE p.estoque < 10
+ORDER BY p.estoque ASC;
 
--- View de produtos mais vendidos (simulada - requer tabela de pedidos completa)
-CREATE OR REPLACE VIEW vw_product_sales_summary AS
+CREATE OR REPLACE VIEW vw_resumo_vendas_produto AS
 SELECT 
     p.id,
-    p.name,
-    p.brand,
-    p.price,
-    p.stock_quantity,
-    COUNT(oi.id) AS total_orders,
-    SUM(oi.quantity) AS total_quantity_sold,
-    SUM(oi.price * oi.quantity) AS total_revenue
-FROM products p
-LEFT JOIN order_items oi ON p.id = oi.product_id
-GROUP BY p.id, p.name, p.brand, p.price, p.stock_quantity
-ORDER BY total_revenue DESC;
+    p.nome,
+    p.marca,
+    p.preco,
+    p.estoque,
+    COUNT(i.id) AS total_pedidos,
+    SUM(i.quantidade) AS total_quantidade_vendida,
+    SUM(i.subtotal) AS total_faturado
+FROM produtos p
+LEFT JOIN itens_pedido i ON p.id = i.produto_id
+GROUP BY p.id, p.nome, p.marca, p.preco, p.estoque
+ORDER BY total_faturado DESC;
+
 
 -- ====================================================
 -- EXEMPLOS DE USO

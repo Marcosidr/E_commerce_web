@@ -1,4 +1,10 @@
 <?php
+// Força charset UTF-8
+if (!headers_sent()) {
+    header('Content-Type: text/html; charset=utf-8');
+}
+mb_internal_encoding('UTF-8');
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -171,6 +177,25 @@ if ($currentUser && !empty($currentUser['nome'])) {
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal de Visualização Rápida do Produto -->
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="quickViewModalLabel">Visualização Rápida</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body" id="quickViewContent">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-light" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="<?= BASE_URL ?>/js/urbanstreet.js"></script>
     
     <!-- Estilos para carrinho -->
@@ -213,7 +238,98 @@ if ($currentUser && !empty($currentUser['nome'])) {
         background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
         color: #721c24;
     }
+    
+    /* Modal Quick View */
+    #quickViewModal .modal-content {
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    #quickViewModal .product-img-modal {
+        border-radius: 12px;
+        max-height: 400px;
+        object-fit: cover;
+    }
     </style>
+    
+    <script>
+    // Quick View Modal - Visualização Rápida de Produtos
+    document.addEventListener('DOMContentLoaded', function() {
+        // Interceptar cliques nos botões de visualização
+        document.addEventListener('click', function(e) {
+            const viewBtn = e.target.closest('.quick-view-btn');
+            if (viewBtn) {
+                e.preventDefault();
+                const productId = viewBtn.dataset.productId;
+                loadQuickView(productId);
+            }
+        });
+    });
+    
+    function loadQuickView(productId) {
+        const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+        const content = document.getElementById('quickViewContent');
+        
+        // Mostrar loading
+        content.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-light" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+            </div>
+        `;
+        
+        modal.show();
+        
+        // Buscar dados do produto
+        fetch(BASE_URL + '/api/product/' + productId)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    renderQuickView(data.product);
+                } else {
+                    content.innerHTML = '<div class="alert alert-danger">Erro ao carregar produto.</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                content.innerHTML = '<div class="alert alert-danger">Erro ao carregar produto.</div>';
+            });
+    }
+    
+    function renderQuickView(product) {
+        const content = document.getElementById('quickViewContent');
+        const imageUrl = BASE_URL + '/images/products/' + product.id + '.jpg';
+        const fallbackImage = BASE_URL + '/images/products/default.jpg';
+        
+        content.innerHTML = `
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <img src="${imageUrl}" alt="${product.nome}" class="img-fluid product-img-modal w-100" 
+                         onerror="this.src='${fallbackImage}'">
+                </div>
+                <div class="col-md-6">
+                    <span class="badge bg-secondary mb-2">${product.category_name || 'URBAN'}</span>
+                    <h3 class="fw-bold mb-3">${product.nome}</h3>
+                    <p class="text-muted mb-3">${product.marca || ''}</p>
+                    <h4 class="text-danger fw-bold mb-4">R$ ${parseFloat(product.preco).toFixed(2).replace('.', ',')}</h4>
+                    
+                    <div class="mb-4">
+                        <span class="badge ${product.estoque > 0 ? 'bg-success' : 'bg-danger'}">
+                            ${product.estoque > 0 ? product.estoque + ' em estoque' : 'Esgotado'}
+                        </span>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button class="btn btn-danger btn-lg add-to-cart" data-product-id="${product.id}" ${product.estoque <= 0 ? 'disabled' : ''}>
+                            <i class="fas fa-cart-plus me-2"></i>Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    </script>
 </body>
 
 </html>

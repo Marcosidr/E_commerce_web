@@ -84,7 +84,7 @@ class CarrinhoController extends Controller
         }
         
         // Verificar estoque
-        if ($produto['stock_quantity'] < $quantidade) {
+        if ($produto['estoque'] < $quantidade) {
             echo json_encode(['success' => false, 'message' => 'Estoque insuficiente']);
             exit;
         }
@@ -100,8 +100,8 @@ class CarrinhoController extends Controller
                 'produto_id' => $produtoId,
                 'quantidade' => $quantidade,
                 'tamanho' => $tamanho,
-                'preco' => $produto['price'],
-                'nome' => $produto['name']
+                'preco' => $produto['preco'],
+                'nome' => $produto['nome']
             ];
         }
         
@@ -296,10 +296,10 @@ class CarrinhoController extends Controller
                     'quantidade' => $item['quantidade'],
                     'tamanho' => $item['tamanho'],
                     'preco' => $item['preco'],
-                    'nome' => $produto['name'],
-                    'marca' => $produto['brand'],
-                    'imagem' => $produto['image'] ?? null,
-                    'slug' => $produto['slug'],
+                    'nome' => $produto['nome'] ?? '',
+                    'marca' => $produto['marca'] ?? '',
+                    'imagem' => $produto['imagem'] ?? null,
+                    'slug' => $produto['slug'] ?? '',
                     'subtotal' => $item['preco'] * $item['quantidade']
                 ];
             }

@@ -61,16 +61,16 @@ class ProductController extends Controller
         }
         
         $product = $this->productModel->findById($id);
-        if (!$product || !$product['active']) {
+        if (!$product || !$product['ativo']) {
             $this->redirect('/catalogo');
         }
         
         // Produtos relacionados (mesma categoria)
-        $relatedProducts = $this->productModel->getRelated($product['category_id'], $product['id'], 4);
+        $relatedProducts = $this->productModel->getRelated($product['categoria_id'], $product['id'], 4);
         
         $this->loadView('products/produto', [
-            'title' => $product['name'] . ' - URBANSTREET',
-            'metaDescription' => substr(strip_tags($product['description']), 0, 150),
+            'title' => $product['nome'] . ' - URBANSTREET',
+            'metaDescription' => substr(strip_tags($product['descricao']), 0, 150),
             'product' => $product,
             'relatedProducts' => $relatedProducts,
             'pageClass' => 'product-page'

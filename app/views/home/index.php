@@ -83,26 +83,26 @@
                     <div class="col-lg-6 col-xl-3 mb-4">
                         <div class="product-card h-100">
                             <div class="product-image position-relative">
-                                <img src="<?= $product['image'] ?? BASE_URL . '/images/no-image.jpg' ?>" 
-                                     alt="<?= htmlspecialchars($product['name']) ?>" 
+                                <img src="<?= getProductImageUrl($product['id']) ?>" 
+                                     alt="<?= htmlspecialchars($product['nome']) ?>" 
                                      class="img-fluid">
                                 <div class="product-badge">
                                     <span class="badge bg-primary">DESTAQUE</span>
                                     <span class="badge bg-secondary"><?= strtoupper($product['category_name'] ?? 'URBAN STYLE') ?></span>
                                 </div>
                                 <div class="product-overlay">
-                                    <a href="<?= BASE_URL ?>/produto/<?= $product['id'] ?>" class="btn btn-primary btn-sm">
+                                    <button class="btn btn-primary btn-sm quick-view-btn" data-product-id="<?= $product['id'] ?>">
                                         <i class="fas fa-eye"></i>
-                                    </a>
+                                    </button>
                                     <button class="btn btn-secondary btn-sm add-to-cart" data-product-id="<?= $product['id'] ?>">
                                         <i class="fas fa-cart-plus"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="product-info p-3">
-                                <h5 class="product-title mb-2"><?= htmlspecialchars($product['name']) ?></h5>
+                                <h5 class="product-title mb-2"><?= htmlspecialchars($product['nome']) ?></h5>
                                 <p class="product-price h4 text-primary mb-0">
-                                    <?= App\Models\Product::formatPrice($product['price']) ?>
+                                    <?= App\Models\Product::formatPrice($product['preco']) ?>
                                 </p>
                             </div>
                         </div>

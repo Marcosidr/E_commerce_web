@@ -1,5 +1,10 @@
 <?php
 
+// Força charset UTF-8 em todas as saídas
+header('Content-Type: text/html; charset=utf-8');
+mb_internal_encoding('UTF-8');
+mb_http_output('UTF-8');
+
 // Carrega o autoloader do Composer
 require_once __DIR__ . '/../vendor/autoload.php';
 

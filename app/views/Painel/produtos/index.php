@@ -53,15 +53,15 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
               <?php foreach (($produtos ?? []) as $p): ?>
                 <tr>
                   <td>#<?= (int)$p['id'] ?></td>
-                  <td><?= htmlspecialchars($p['name']) ?></td>
-                  <td>R$ <?= number_format((float)$p['price'], 2, ',', '.') ?></td>
-                  <td><?= (int)($p['stock_quantity'] ?? 0) ?></td>
+                  <td><?= htmlspecialchars($p['nome']) ?></td>
+                  <td>R$ <?= number_format((float)$p['preco'], 2, ',', '.') ?></td>
+                  <td><?= (int)($p['estoque'] ?? 0) ?></td>
                   <td>
-                    <span class="badge bg-<?= ($p['active']??0)?'success':'secondary' ?>"><?= ($p['active']??0)?'Ativo':'Inativo' ?></span>
+                    <span class="badge bg-<?= ($p['ativo']??0)?'success':'secondary' ?>"><?= ($p['ativo']??0)?'Ativo':'Inativo' ?></span>
                   </td>
                   <td>
                     <div class="form-switch">
-                      <input class="form-check-input toggle-featured" type="checkbox" data-id="<?= (int)$p['id'] ?>" <?= (int)($p['featured']??0) ? 'checked' : '' ?>>
+                      <input class="form-check-input toggle-featured" type="checkbox" data-id="<?= (int)$p['id'] ?>" <?= (int)($p['destaque']??0) ? 'checked' : '' ?>>
                     </div>
                   </td>
                   <td class="text-end">

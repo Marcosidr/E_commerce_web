@@ -52,7 +52,7 @@ class DashboardReportsController extends Controller
     {
         $format = $this->detectFormatFromUri('produtos');
         [$clause,$params] = $this->buildDateWhere($_GET['from'] ?? '', $_GET['to'] ?? '');
-        $sql = "SELECT id, name, price, stock_quantity, featured, active, created_at FROM products".$clause." ORDER BY id DESC";
+        $sql = "SELECT id, nome, preco, estoque, destaque, ativo, criado_em FROM produtos".$clause." ORDER BY id DESC";
         $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k,$v); $stmt->execute();
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $this->exportRows('produtos', $rows, $format);
@@ -63,7 +63,7 @@ class DashboardReportsController extends Controller
         $format = $this->detectFormatFromUri('pedidos');
         try{
             [$clause,$params] = $this->buildDateWhere($_GET['from'] ?? '', $_GET['to'] ?? '');
-            $sql = "SELECT id, user_id, status, total_amount, created_at FROM orders".$clause." ORDER BY id DESC";
+            $sql = "SELECT id, usuario_id, status, total, criado_em FROM pedidos".$clause." ORDER BY id DESC";
             $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k,$v); $stmt->execute();
             $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }catch(\Throwable $e){ $rows = []; }
@@ -75,7 +75,7 @@ class DashboardReportsController extends Controller
         $format = $this->detectFormatFromUri('clientes');
         try{
             [$clause,$params] = $this->buildDateWhere($_GET['from'] ?? '', $_GET['to'] ?? '');
-            $sql = "SELECT id, name, email, phone, created_at FROM users WHERE active = 1" . ($clause? str_replace(' WHERE ',' AND ',$clause): '') . " ORDER BY created_at DESC";
+            $sql = "SELECT id, nome, email, telefone, criado_em FROM usuarios WHERE ativo = 1" . ($clause? str_replace(' WHERE ',' AND ',$clause): '') . " ORDER BY criado_em DESC";
             $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k,$v); $stmt->execute();
             $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }catch(\Throwable $e){ $rows = []; }
@@ -87,7 +87,7 @@ class DashboardReportsController extends Controller
         $format = $this->detectFormatFromUri('vendas_diario');
         try{
             [$clause,$params] = $this->buildDateWhere($_GET['from'] ?? '', $_GET['to'] ?? '');
-            $sql = "SELECT DATE(created_at) as dia, COUNT(*) as total_pedidos, SUM(total_amount) as total_vendas FROM orders".$clause." GROUP BY DATE(created_at) ORDER BY dia DESC";
+            $sql = "SELECT DATE(criado_em) as dia, COUNT(*) as total_pedidos, SUM(total) as total_vendas FROM pedidos".$clause." GROUP BY DATE(criado_em) ORDER BY dia DESC";
             $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k,$v); $stmt->execute();
             $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }catch(\Throwable $e){ $rows = []; }
@@ -170,27 +170,27 @@ class DashboardReportsController extends Controller
         try {
             switch ($type) {
                 case 'produtos':
-                    $sql = "SELECT id, name, price, stock_quantity, featured, active, created_at FROM products" . $clause . " ORDER BY id DESC LIMIT 1000";
+                    $sql = "SELECT id, nome, preco, estoque, destaque, ativo, criado_em FROM produtos" . $clause . " ORDER BY id DESC LIMIT 1000";
                     $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k, $v); $stmt->execute();
                     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                     return ['columns'=>array_keys($rows[0] ?? ['id'=>null,'name'=>null]), 'rows'=>$rows];
 
                 case 'pedidos':
                 case 'vendas':
-                    $sql = "SELECT id, user_id, status, total_amount, created_at FROM orders" . $clause . " ORDER BY id DESC LIMIT 1000";
+                    $sql = "SELECT id, usuario_id, status, total, criado_em FROM pedidos" . $clause . " ORDER BY id DESC LIMIT 1000";
                     $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k, $v); $stmt->execute();
                     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                     return ['columns'=>array_keys($rows[0] ?? ['id'=>null,'user_id'=>null]), 'rows'=>$rows];
 
                 case 'vendas_diario':
                     // Para período, aplica nos limites de created_at e agrupa por dia
-                    $base = "SELECT DATE(created_at) as dia, COUNT(*) as total_pedidos, SUM(total_amount) as total_vendas FROM orders" . $clause . " GROUP BY DATE(created_at) ORDER BY dia DESC";
+                    $base = "SELECT DATE(criado_em) as dia, COUNT(*) as total_pedidos, SUM(total) as total_vendas FROM pedidos" . $clause . " GROUP BY DATE(criado_em) ORDER BY dia DESC";
                     $stmt = $this->db->prepare($base); foreach ($params as $k=>$v) $stmt->bindValue($k, $v); $stmt->execute();
                     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                     return ['columns'=>['dia','total_pedidos','total_vendas'], 'rows'=>$rows];
 
                 case 'clientes':
-                    $sql = "SELECT id, name, email, phone, created_at FROM users WHERE active = 1" . ($where? ' AND ' . implode(' AND ', $where): '') . " ORDER BY id DESC LIMIT 1000";
+                    $sql = "SELECT id, nome, email, telefone, criado_em FROM usuarios WHERE ativo = 1" . ($where? ' AND ' . implode(' AND ', $where): '') . " ORDER BY id DESC LIMIT 1000";
                     $stmt = $this->db->prepare($sql); foreach ($params as $k=>$v) $stmt->bindValue($k, $v); $stmt->execute();
                     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                     return ['columns'=>array_keys($rows[0] ?? ['id'=>null,'name'=>null]), 'rows'=>$rows];
@@ -199,9 +199,9 @@ class DashboardReportsController extends Controller
                 case 'tudo':
                     // Resumo com contagens principais
                     $counts = [];
-                    $counts['total_produtos'] = (int)($this->db->query('SELECT COUNT(*) FROM products')->fetchColumn() ?: 0);
-                    try { $counts['total_pedidos'] = (int)($this->db->query('SELECT COUNT(*) FROM orders')->fetchColumn() ?: 0); } catch (\Throwable $e) { $counts['total_pedidos'] = 0; }
-                    $counts['total_clientes'] = (int)($this->db->query('SELECT COUNT(*) FROM users WHERE active = 1')->fetchColumn() ?: 0);
+                    $counts['total_produtos'] = (int)($this->db->query('SELECT COUNT(*) FROM produtos')->fetchColumn() ?: 0);
+                    try { $counts['total_pedidos'] = (int)($this->db->query('SELECT COUNT(*) FROM pedidos')->fetchColumn() ?: 0); } catch (\Throwable $e) { $counts['total_pedidos'] = 0; }
+                    $counts['total_clientes'] = (int)($this->db->query('SELECT COUNT(*) FROM usuarios WHERE ativo = 1')->fetchColumn() ?: 0);
                     $rows = [$counts];
                     return ['columns'=>array_keys($rows[0]), 'rows'=>$rows];
             }
@@ -215,8 +215,8 @@ class DashboardReportsController extends Controller
     {
         $where = [];
         $params = [];
-        if ($from) { $where[] = 'created_at >= :from'; $params[':from'] = $from . ' 00:00:00'; }
-        if ($to)   { $where[] = 'created_at <= :to';   $params[':to']   = $to   . ' 23:59:59'; }
+        if ($from) { $where[] = 'criado_em >= :from'; $params[':from'] = $from . ' 00:00:00'; }
+        if ($to)   { $where[] = 'criado_em <= :to';   $params[':to']   = $to   . ' 23:59:59'; }
         $clause = $where ? (' WHERE ' . implode(' AND ', $where)) : '';
         return $returnWhereParts ? [$clause,$params,$where] : [$clause,$params];
     }

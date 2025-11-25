@@ -70,7 +70,7 @@ class LoginController extends Controller
             header('Location: ' . BASE_URL . '/login');
             exit;
         }
-        if (!password_verify($password, $dataUsers->password)) {
+        if (!password_verify($password, $dataUsers->senha)) {
             $_SESSION['flash_message'] = [
                 'type' => 'danger',
                 'text' => 'Senha inválida.'
@@ -87,7 +87,7 @@ class LoginController extends Controller
 
         $_SESSION['users'] = [
             'id' => $dataUsers->id,
-            'nome' => $dataUsers->name,
+            'nome' => $dataUsers->nome,
             'email' => $dataUsers->email,
             'role' => $role
         ];

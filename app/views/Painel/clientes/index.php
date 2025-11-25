@@ -32,9 +32,9 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
               <?php foreach ($clientes as $c): ?>
               <tr>
                 <td>#<?= (int)$c['id'] ?></td>
-                <td><?= htmlspecialchars($c['name']) ?></td>
+                <td><?= htmlspecialchars($c['nome']) ?></td>
                 <td><?= htmlspecialchars($c['email']) ?></td>
-                <td><?= htmlspecialchars($c['created_at'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($c['criado_em'] ?? '-') ?></td>
                 <td class="text-end"><a class="btn btn-sm btn-outline-light" href="<?= BASE_URL ?>/dashboard/clientes/<?= (int)$c['id'] ?>">Ver</a></td>
               </tr>
               <?php endforeach; ?>

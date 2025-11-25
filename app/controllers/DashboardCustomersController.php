@@ -28,7 +28,7 @@ class DashboardCustomersController extends Controller
     {
         // Lista clientes (usuários com role = 'cliente' se existir) ou todos ativos
         try {
-            $stmt = $this->db->query("SELECT id, name, email, created_at FROM users WHERE active = 1 ORDER BY created_at DESC LIMIT 200");
+            $stmt = $this->db->query("SELECT id, nome, email, criado_em FROM usuarios WHERE ativo = 1 ORDER BY criado_em DESC LIMIT 200");
             $clientes = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Throwable $e) { $clientes = []; }
         $this->loadPartial('Painel/clientes/index', ['clientes'=>$clientes]);
@@ -39,7 +39,7 @@ class DashboardCustomersController extends Controller
         $id = (int)$id;
         $cliente = null;
         try {
-            $stmt = $this->db->prepare("SELECT id, name, email, phone, created_at FROM users WHERE id = :id LIMIT 1");
+            $stmt = $this->db->prepare("SELECT id, nome, email, telefone, criado_em FROM usuarios WHERE id = :id LIMIT 1");
             $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
             $stmt->execute();
             $cliente = $stmt->fetch(\PDO::FETCH_ASSOC);
