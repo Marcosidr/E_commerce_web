@@ -304,17 +304,29 @@ class DashboardProductsController extends Controller
             error_log("tmp exists: " . (file_exists($tmpName) ? 'YES' : 'NO'));
 
             $moved = false;
-            if (is_uploaded_file($tmpName)) {
-                $moved = @move_uploaded_file($tmpName, $path);
-                error_log("move_uploaded_file: " . ($moved ? 'SUCCESS' : 'FAILED'));
-            }
-
-            if (!$moved && file_exists($tmpName)) {
-                error_log("Tentando fallback copy()");
+            
+            // No Windows/XAMPP, move_uploaded_file às vezes falha silenciosamente
+            // Então tentamos copy() + unlink() primeiro
+            if (file_exists($tmpName)) {
+                error_log("Tentando copy() primeiro (mais confiável no Windows)");
                 $copied = @copy($tmpName, $path);
                 error_log("copy: " . ($copied ? 'SUCCESS' : 'FAILED'));
-                $moved = $copied;
-                if ($moved) @unlink($tmpName);
+                
+                if ($copied && file_exists($path)) {
+                    @unlink($tmpName);
+                    error_log("Arquivo copiado e temp deletado");
+                    $moved = true;
+                } elseif (!$copied && is_uploaded_file($tmpName)) {
+                    // Se copy falhar, tenta move_uploaded_file como fallback
+                    error_log("copy falhou, tentando move_uploaded_file");
+                    $moved = @move_uploaded_file($tmpName, $path);
+                    error_log("move_uploaded_file: " . ($moved ? 'SUCCESS' : 'FAILED'));
+                }
+            } elseif (is_uploaded_file($tmpName)) {
+                // Se não for file_exists mas for uploaded_file, tenta move direto
+                error_log("Arquivo temporário não encontrado mas é uploaded_file, tentando move_uploaded_file");
+                $moved = @move_uploaded_file($tmpName, $path);
+                error_log("move_uploaded_file: " . ($moved ? 'SUCCESS' : 'FAILED'));
             }
 
             error_log("File exists after move/copy: " . (file_exists($path) ? 'YES' : 'NO'));
