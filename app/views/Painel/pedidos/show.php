@@ -27,11 +27,11 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
       <div class="card mb-3"><div class="card-body">
         <div class="row g-3">
           <div class="col-md-3"><strong>ID:</strong> #<?= (int)$pedido['id'] ?></div>
-          <div class="col-md-3"><strong>Cliente (ID):</strong> <?= htmlspecialchars($pedido['user_id']) ?></div>
+          <div class="col-md-3"><strong>Cliente (ID):</strong> <?= htmlspecialchars($pedido['usuario_id']) ?></div>
           <div class="col-md-3"><strong>Status:</strong> <?= htmlspecialchars($pedido['status'] ?? '-') ?></div>
-          <div class="col-md-3"><strong>Total:</strong> R$ <?= number_format((float)($pedido['total_amount'] ?? 0),2,',','.') ?></div>
-          <div class="col-md-6"><strong>Criado em:</strong> <?= htmlspecialchars($pedido['created_at'] ?? '-') ?></div>
-          <div class="col-md-6"><strong>Atualizado em:</strong> <?= htmlspecialchars($pedido['updated_at'] ?? '-') ?></div>
+          <div class="col-md-3"><strong>Total:</strong> R$ <?= number_format((float)($pedido['total'] ?? 0),2,',','.') ?></div>
+          <div class="col-md-6"><strong>Criado em:</strong> <?= htmlspecialchars($pedido['criado_em'] ?? '-') ?></div>
+          <div class="col-md-6"><strong>Atualizado em:</strong> <?= htmlspecialchars($pedido['atualizado_em'] ?? '-') ?></div>
         </div>
       </div></div>
 
@@ -44,11 +44,11 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
             <table class="table align-middle">
               <thead><tr><th>Produto</th><th>Qtd</th><th>Preço</th><th>Subtotal</th></tr></thead>
               <tbody>
-              <?php foreach ($itens as $i): $sub = (float)($i['price']??0) * (int)($i['quantity']??0); ?>
+              <?php foreach ($itens as $i): $sub = (float)($i['preco_unitario']??0) * (int)($i['quantidade']??0); ?>
                 <tr>
-                  <td><?= htmlspecialchars($i['product_name'] ?? ('#'.($i['product_id']??''))) ?></td>
-                  <td><?= (int)($i['quantity'] ?? 0) ?></td>
-                  <td>R$ <?= number_format((float)($i['price'] ?? 0),2,',','.') ?></td>
+                  <td><?= htmlspecialchars($i['nome_produto'] ?? ('#'.($i['produto_id']??''))) ?></td>
+                  <td><?= (int)($i['quantidade'] ?? 0) ?></td>
+                  <td>R$ <?= number_format((float)($i['preco_unitario'] ?? 0),2,',','.') ?></td>
                   <td>R$ <?= number_format($sub,2,',','.') ?></td>
                 </tr>
               <?php endforeach; ?>

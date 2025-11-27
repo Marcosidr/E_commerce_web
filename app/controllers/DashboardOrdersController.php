@@ -63,4 +63,73 @@ class DashboardOrdersController extends Controller
         }
         $this->loadPartial('Painel/pedidos/show', ['pedido'=>$pedido,'itens'=>$itens]);
     }
+
+    // Formulário de edição
+    public function editar($id)
+    {
+        $id = (int)$id;
+        $pedido = null; $itens = [];
+        try {
+            $stmt = $this->db->prepare("SELECT p.* FROM pedidos p WHERE p.id = :id LIMIT 1");
+            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+            $stmt->execute();
+            $pedido = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if ($pedido) {
+                $s2 = $this->db->prepare("SELECT i.*, pr.nome as nome_produto FROM itens_pedido i LEFT JOIN produtos pr ON pr.id = i.produto_id WHERE i.pedido_id = :id");
+                $s2->bindValue(':id', $id, \PDO::PARAM_INT);
+                $s2->execute();
+                $itens = $s2->fetchAll(\PDO::FETCH_ASSOC);
+            }
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
+        $this->loadPartial('Painel/pedidos/editar', ['pedido'=>$pedido,'itens'=>$itens]);
+    }
+
+    // Atualizar pedido (status, total, usuario_id)
+    public function atualizar($id)
+    {
+        $id = (int)$id;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/dashboard/pedidos');
+            exit;
+        }
+
+        $usuario_id = isset($_POST['usuario_id']) ? (int)$_POST['usuario_id'] : null;
+        $status = trim($_POST['status'] ?? 'pendente');
+        $total = isset($_POST['total']) ? (float)str_replace(',', '.', $_POST['total']) : 0;
+
+        try {
+            $stmt = $this->db->prepare("UPDATE pedidos SET usuario_id = :usuario_id, status = :status, total = :total, atualizado_em = NOW() WHERE id = :id");
+            $stmt->bindValue(':usuario_id', $usuario_id, \PDO::PARAM_INT);
+            $stmt->bindValue(':status', $status);
+            $stmt->bindValue(':total', $total);
+            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+            $stmt->execute();
+            $_SESSION['flash_message'] = ['type'=>'success','text'=>'Pedido atualizado'];
+        } catch (\Throwable $e) {
+            $_SESSION['flash_message'] = ['type'=>'danger','text'=>'Falha ao atualizar pedido'];
+        }
+
+        header('Location: ' . BASE_URL . '/dashboard/pedidos/' . $id);
+        exit;
+    }
+
+    // Deletar (remover) pedido
+    public function deletar($id)
+    {
+        $id = (int)$id;
+        try {
+            $stmt = $this->db->prepare("DELETE FROM pedidos WHERE id = :id");
+            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+            $stmt->execute();
+            $_SESSION['flash_message'] = ['type'=>'success','text'=>'Pedido removido'];
+        } catch (\Throwable $e) {
+            $_SESSION['flash_message'] = ['type'=>'danger','text'=>'Falha ao remover pedido'];
+        }
+        header('Location: ' . BASE_URL . '/dashboard/pedidos');
+        exit;
+    }
 }

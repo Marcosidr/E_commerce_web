@@ -26,10 +26,10 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
       <div class="card"><div class="card-body">
         <div class="row g-3">
           <div class="col-md-3"><strong>ID:</strong> #<?= (int)$cliente['id'] ?></div>
-          <div class="col-md-5"><strong>Nome:</strong> <?= htmlspecialchars($cliente['name'] ?? '-') ?></div>
+          <div class="col-md-5"><strong>Nome:</strong> <?= htmlspecialchars($cliente['nome'] ?? '-') ?></div>
           <div class="col-md-4"><strong>Email:</strong> <?= htmlspecialchars($cliente['email'] ?? '-') ?></div>
-          <div class="col-md-4"><strong>Telefone:</strong> <?= htmlspecialchars($cliente['phone'] ?? '-') ?></div>
-          <div class="col-md-4"><strong>Cadastrado em:</strong> <?= htmlspecialchars($cliente['created_at'] ?? '-') ?></div>
+          <div class="col-md-4"><strong>Telefone:</strong> <?= htmlspecialchars($cliente['telefone'] ?? '-') ?></div>
+          <div class="col-md-4"><strong>Cadastrado em:</strong> <?= htmlspecialchars($cliente['criado_em'] ?? '-') ?></div>
         </div>
       </div></div>
     <?php endif; ?>

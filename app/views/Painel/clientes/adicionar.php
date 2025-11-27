@@ -134,6 +134,17 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
                     </div>
                 </div>
 
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Papel</label>
+                        <select name="role" class="form-select">
+                            <option value="cliente" selected>Cliente</option>
+                            <option value="admin">Administrador</option>
+                            <option value="staff">Staff</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Preferências -->
                 <h6 class="section-title"><i class="fas fa-envelope-open-text me-2"></i>Preferências</h6>
 

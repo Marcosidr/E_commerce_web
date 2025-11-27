@@ -57,10 +57,22 @@ $router->add('/^dashboard\/produtos\/imagem\/(?P<id>\d+)\/deletar$/', 'Dashboard
 // Dashboard > Pedidos
 $router->add('/^dashboard\/pedidos$/', 'DashboardOrders', 'index');
 $router->add('/^dashboard\/pedidos\/(?P<id>\d+)$/', 'DashboardOrders', 'show');
-
+// rotas adicionais para editar/atualizar/deletar pedidos
+$router->add('/^dashboard\/pedidos\/(?P<id>\d+)\/editar$/', 'DashboardOrders', 'editar');
+$router->add('/^dashboard\/pedidos\/(?P<id>\d+)\/atualizar$/', 'DashboardOrders', 'atualizar');
+$router->add('/^dashboard\/pedidos\/(?P<id>\d+)\/deletar$/', 'DashboardOrders', 'deletar');
+ 
 // Dashboard > Clientes
 $router->add('/^dashboard\/clientes$/', 'DashboardCustomers', 'index');
 $router->add('/^dashboard\/clientes\/(?P<id>\d+)$/', 'DashboardCustomers', 'show');
+// rotas adicionais para CRUD de clientes
+$router->add('/^dashboard\/clientes\/adicionar$/', 'DashboardCustomers', 'adicionar');
+$router->add('/^dashboard\/clientes\/criar$/', 'DashboardCustomers', 'adicionar');
+$router->add('/^dashboard\/clientes\/store$/', 'DashboardCustomers', 'store');
+$router->add('/^dashboard\/clientes\/salvar$/', 'DashboardCustomers', 'salvar');
+$router->add('/^dashboard\/clientes\/(?P<id>\d+)\/editar$/', 'DashboardCustomers', 'editar');
+$router->add('/^dashboard\/clientes\/update\/(?P<id>\d+)$/', 'DashboardCustomers', 'update');
+$router->add('/^dashboard\/clientes\/deletar\/(?P<id>\d+)$/', 'DashboardCustomers', 'deletar');
 
 // Dashboard > Relatórios (exportações)
 $router->add('/^dashboard\/relatorios\/produtos\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportProducts');

@@ -137,6 +137,16 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
                            class="form-control" placeholder="email@exemplo.com" required>
                 </div>
 
+                <!-- Papel (role) -->
+                <div class="mb-3">
+                    <label for="role">Papel</label>
+                    <select id="role" name="role" class="form-control">
+                        <option value="cliente" selected>Cliente</option>
+                        <option value="admin">Administrador</option>
+                        <option value="staff">Staff</option>
+                    </select>
+                </div>
+
                 <!-- Botão -->
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary">
