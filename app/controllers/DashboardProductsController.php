@@ -251,6 +251,8 @@ class DashboardProductsController extends Controller
      */
     private function uploadProductImages(int $productId, array $files, ?int $categoryId = null): void
     {
+        error_log("=== uploadProductImages() START product_id=$productId, category_id=$categoryId ===");
+        
         // map de categorias → pastas
         $map = [
             1 => 'tenis',
@@ -263,39 +265,30 @@ class DashboardProductsController extends Controller
         $folder = $map[$categoryId] ?? 'diversos';
         $dir = __DIR__ . '/../../../public/images/products/' . $folder;
 
-        // Log file
-        $logFile = __DIR__ . '/../../../upload_log.txt';
-        $log = function($msg) use ($logFile) {
-            file_put_contents($logFile, '[' . date('Y-m-d H:i:s') . '] ' . $msg . "\n", FILE_APPEND);
-        };
-
-        $log("=== UPLOAD START product_id=$productId, category=$folder, dir=$dir ===");
+        error_log("Folder: $folder, Dir: $dir");
+        error_log("FILES tmp_name count: " . count($files['tmp_name'] ?? []));
 
         if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-            $log("Criada pasta: $dir");
+            @mkdir($dir, 0777, true);
+            error_log("Criada pasta: $dir");
         }
 
         if (!isset($files['tmp_name']) || !is_array($files['tmp_name'])) {
-            $log("ERRO: files['tmp_name'] não é array ou não existe");
+            error_log("ERRO: files['tmp_name'] não é array");
             return;
         }
 
         foreach ($files['tmp_name'] as $i => $tmpName) {
-            $log("\n--- File $i ---");
-            $log("tmp_name: $tmpName");
-            $log("name: " . ($files['name'][$i] ?? 'N/A'));
-            $log("error: " . ($files['error'][$i] ?? 'N/A'));
-            $log("size: " . ($files['size'][$i] ?? 'N/A'));
+            error_log("\n--- File $i: $tmpName ---");
 
             if (!$tmpName) {
-                $log("tmp_name vazio, pulando");
+                error_log("tmp_name vazio");
                 continue;
             }
 
             $errorCode = $files['error'][$i] ?? 0;
             if ($errorCode !== UPLOAD_ERR_OK) {
-                $log("ERRO de upload: código $errorCode");
+                error_log("ERRO de upload: $errorCode");
                 continue;
             }
 
@@ -305,38 +298,38 @@ class DashboardProductsController extends Controller
             $name = time() . '_' . $safe . '.' . $ext;
             $path = $dir . DIRECTORY_SEPARATOR . $name;
 
-            $log("Target path: $path");
-            $log("is_uploaded_file: " . (is_uploaded_file($tmpName) ? 'true' : 'false'));
-            $log("tmp file exists: " . (file_exists($tmpName) ? 'true' : 'false'));
-            $log("dir exists: " . (is_dir($dir) ? 'true' : 'false'));
-            $log("dir writable: " . (is_writable($dir) ? 'true' : 'false'));
+            error_log("Orig: $origName, Ext: $ext, Safe: $safe, Name: $name");
+            error_log("Target: $path");
+            error_log("is_uploaded_file: " . (is_uploaded_file($tmpName) ? 'YES' : 'NO'));
+            error_log("tmp exists: " . (file_exists($tmpName) ? 'YES' : 'NO'));
 
             $moved = false;
             if (is_uploaded_file($tmpName)) {
                 $moved = @move_uploaded_file($tmpName, $path);
-                $log("move_uploaded_file result: " . ($moved ? 'true' : 'false'));
+                error_log("move_uploaded_file: " . ($moved ? 'SUCCESS' : 'FAILED'));
             }
 
             if (!$moved && file_exists($tmpName)) {
+                error_log("Tentando fallback copy()");
                 $copied = @copy($tmpName, $path);
-                $log("copy() fallback result: " . ($copied ? 'true' : 'false'));
+                error_log("copy: " . ($copied ? 'SUCCESS' : 'FAILED'));
                 $moved = $copied;
                 if ($moved) @unlink($tmpName);
             }
 
-            $log("File exists after move/copy: " . (file_exists($path) ? 'true' : 'false'));
+            error_log("File exists after move/copy: " . (file_exists($path) ? 'YES' : 'NO'));
 
             if ($moved && file_exists($path)) {
                 $relative = 'images/products/' . $folder . '/' . $name;
-                $log("Salvando no BD: product_id=$productId, path=$relative");
+                error_log("Salvando no BD: $relative");
                 $this->productModel->addImage($productId, $relative);
-                $log("Salvo no BD com sucesso");
+                error_log("Salvo com sucesso");
             } else {
-                $log("FALHA: arquivo não foi movido ou não existe após move/copy");
+                error_log("FALHA: arquivo não foi movido ou não existe");
             }
         }
 
-        $log("=== UPLOAD END ===\n");
+        error_log("=== uploadProductImages() END ===\n");
     }
 
     public function deleteImage($imageId)
