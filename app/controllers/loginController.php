@@ -14,8 +14,11 @@ class LoginController extends Controller
     {
         $connection = new \Connection();
         $pdo = $connection->conect();
-    $this->users = new Users($pdo);
-        if (session_status() === PHP_SESSION_NONE) { session_start(); }
+        $this->users = new Users($pdo);
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
     /**
@@ -52,6 +55,7 @@ class LoginController extends Controller
             header('Location: ' . BASE_URL . '/login');
             exit;
         }
+
         if ($password === '') {
             $_SESSION['flash_message'] = [
                 'type' => 'danger',
@@ -61,7 +65,9 @@ class LoginController extends Controller
             exit;
         }
 
+        // Buscar usuário no banco
         $dataUsers = $this->users->getByEmail($email);
+
         if (!$dataUsers || empty($dataUsers->id)) {
             $_SESSION['flash_message'] = [
                 'type' => 'danger',
@@ -70,6 +76,8 @@ class LoginController extends Controller
             header('Location: ' . BASE_URL . '/login');
             exit;
         }
+
+        // Verificação de senha
         if (!password_verify($password, $dataUsers->senha)) {
             $_SESSION['flash_message'] = [
                 'type' => 'danger',
@@ -78,20 +86,16 @@ class LoginController extends Controller
             header('Location: ' . BASE_URL . '/login');
             exit;
         }
-        $adminEmails = [
-            'admin@urbanstreet.com',
-            'marcosincio556@gmail.com'
-        ];
-        $isAdmin = in_array(strtolower($dataUsers->email), $adminEmails, true);
-        $role = $isAdmin ? 'admin' : 'cliente';
 
+        // Agora o role vem direto do banco — profissional
         $_SESSION['users'] = [
             'id' => $dataUsers->id,
             'nome' => $dataUsers->nome,
             'email' => $dataUsers->email,
-            'role' => $role
+            'role' => $dataUsers->role
         ];
 
+        // Redirecionamento
         $redirectPath = $this->consumeRedirectAfterLogin();
 
         if ($redirectPath) {
@@ -108,8 +112,10 @@ class LoginController extends Controller
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
         session_unset();
         session_destroy();
+
         header('Location: ' . BASE_URL . '/login');
         exit;
     }

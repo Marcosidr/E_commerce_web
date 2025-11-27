@@ -12,14 +12,23 @@ class Users
         $this->pdo = $pdo;
     }
 
+    /**
+     * Busca usuário por email
+     */
     public function getByEmail(string $email): ?object
     {
-        $sql = 'SELECT id, nome, email, email_verificado_em, senha, telefone, data_nascimento, genero, criado_em, atualizado_em
-            FROM usuarios
-            WHERE ativo = 1 AND email = :email LIMIT 1';
+        $sql = 'SELECT 
+                    id, nome, email, email_verificado_em, senha, telefone, 
+                    data_nascimento, genero, role, newsletter, sms_marketing,
+                    criado_em, atualizado_em
+                FROM usuarios
+                WHERE ativo = 1 AND email = :email 
+                LIMIT 1';
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':email', $email);
         $stmt->execute();
+
         $row = $stmt->fetch(PDO::FETCH_OBJ);
         return $row ?: null;
     }
@@ -42,10 +51,16 @@ class Users
     public function create(array $data): ?object
     {
         try {
-                $sql = 'INSERT INTO usuarios (nome, email, senha, telefone, data_nascimento, genero, newsletter, sms_marketing, criado_em, atualizado_em, ativo) 
-                    VALUES (:nome, :email, :senha, :telefone, :data_nascimento, :genero, :newsletter, :sms_marketing, NOW(), NOW(), 1)';
-            
+            $sql = 'INSERT INTO usuarios (
+                        nome, email, senha, telefone, data_nascimento, genero,
+                        newsletter, sms_marketing, role, criado_em, atualizado_em, ativo
+                    ) VALUES (
+                        :nome, :email, :senha, :telefone, :data_nascimento, :genero,
+                        :newsletter, :sms_marketing, :role, NOW(), NOW(), 1
+                    )';
+
             $stmt = $this->pdo->prepare($sql);
+
             $stmt->bindValue(':nome', $data['name']);
             $stmt->bindValue(':email', $data['email']);
             $stmt->bindValue(':senha', $data['password']);
@@ -54,13 +69,15 @@ class Users
             $stmt->bindValue(':genero', $data['sexo'] ?? null);
             $stmt->bindValue(':newsletter', $data['newsletter'] ?? 0, PDO::PARAM_INT);
             $stmt->bindValue(':sms_marketing', $data['sms_marketing'] ?? 0, PDO::PARAM_INT);
-            
+            $stmt->bindValue(':role', $data['role'] ?? 'cliente');
+
             if ($stmt->execute()) {
                 $userId = $this->pdo->lastInsertId();
                 return $this->getById($userId);
             }
-            
+
             return null;
+
         } catch (\PDOException $e) {
             error_log("Erro ao criar usuário: " . $e->getMessage());
             return null;
@@ -72,28 +89,20 @@ class Users
      */
     public function getById(int $id): ?object
     {
-        $sql = 'SELECT id, nome, email, email_verificado_em, senha, telefone, data_nascimento, genero, newsletter, sms_marketing, criado_em, atualizado_em
-            FROM usuarios
-            WHERE ativo = 1 AND id = :id LIMIT 1';
+        $sql = 'SELECT 
+                    id, nome, email, email_verificado_em, senha, telefone,
+                    data_nascimento, genero, role, newsletter, sms_marketing,
+                    criado_em, atualizado_em
+                FROM usuarios
+                WHERE ativo = 1 AND id = :id 
+                LIMIT 1';
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
+
         $row = $stmt->fetch(PDO::FETCH_OBJ);
         return $row ?: null;
-    }
-
-    /**
-     * Autentica um usuário (login)
-     */
-    public function login(string $email, string $password): ?object
-    {
-        $user = $this->getByEmail($email);
-        
-        if ($user && password_verify($password, $user->password)) {
-            return $user;
-        }
-        
-        return null;
     }
 
     /**
@@ -104,24 +113,25 @@ class Users
         try {
             $fields = [];
             $params = [':id' => $id];
-            
+
             foreach ($data as $key => $value) {
-                if (in_array($key, ['nome', 'email', 'telefone', 'data_nascimento', 'genero', 'newsletter', 'sms_marketing'])) {
+                if (in_array($key, ['nome', 'email', 'telefone', 'data_nascimento', 'genero', 'newsletter', 'sms_marketing', 'role'])) {
                     $fields[] = "$key = :$key";
                     $params[":$key"] = $value;
                 }
             }
-            
+
             if (empty($fields)) {
                 return false;
             }
-            
+
             $fields[] = 'atualizado_em = NOW()';
+
             $sql = 'UPDATE usuarios SET ' . implode(', ', $fields) . ' WHERE id = :id';
-            
+
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute($params);
-            
+
         } catch (\PDOException $e) {
             error_log("Erro ao atualizar usuário: " . $e->getMessage());
             return false;
@@ -133,9 +143,13 @@ class Users
      */
     public function deactivate(int $id): bool
     {
-        $sql = 'UPDATE usuarios SET ativo = 0, atualizado_em = NOW() WHERE id = :id';
+        $sql = 'UPDATE usuarios 
+                SET ativo = 0, atualizado_em = NOW() 
+                WHERE id = :id';
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
         return $stmt->execute();
     }
 }
