@@ -64,7 +64,7 @@ class DashboardCustomersController extends Controller
     public function adicionar()
     {
         // Apenas carrega o formulário
-        $this->loadPartial('Painel/clientes/criar');
+        $this->loadPartial('Painel/clientes/adicionar');
     }
 
     // ============================
