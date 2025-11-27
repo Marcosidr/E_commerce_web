@@ -106,17 +106,18 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
         }
         
         /* Buttons */
-        .btn-success {
-            background: linear-gradient(135deg, #28a745, #1e7e34);
+        .btn-primary {
+            background: linear-gradient(135deg, #e53e3e, #b30000);
             border: none;
             border-radius: 10px;
             padding: 0.75rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s;
+            color: #fff;
         }
-        .btn-success:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3);
             color: #fff;
         }
         .btn-outline-light {
@@ -200,7 +201,7 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
     <div class="dashboard-header">
         <h1><i class="fas fa-cube me-3" style="color: #e53e3e;"></i>Produtos</h1>
         <div class="btn-group-header">
-            <a href="<?= BASE_URL ?>/dashboard/produtos/criar" class="btn btn-success">
+            <a href="<?= BASE_URL ?>/dashboard/produtos/criar" class="btn btn-primary">
                 <i class="fa fa-plus me-2"></i> Novo Produto
             </a>
             <a href="<?= BASE_URL ?>/dashboard" class="btn btn-outline-light">
