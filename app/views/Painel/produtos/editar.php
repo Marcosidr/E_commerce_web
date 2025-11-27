@@ -14,279 +14,120 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
     <title>Editar Produto - Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        * { font-family: 'Poppins', sans-serif; }
-        html, body { background: radial-gradient(circle at top right, #111 0%, #000 80%); }
-        body { color: #f5f5f5; min-height: 100vh; }
-        
-        .container-dashboard { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
-        
-        .dashboard-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid rgba(229, 62, 62, 0.3);
+        body { background:#0f0f10; color:#f5f5f5; font-family: 'Poppins', sans-serif; }
+        .card { background:#151517; border:1px solid #26262a; border-radius: 15px; }
+        .form-control, .form-select { 
+            background: rgba(255,255,255,0.08) !important; 
+            border: 1px solid rgba(255,255,255,0.2) !important; 
+            color: #f5f5f5 !important; 
+            border-radius: 10px; 
+            padding: 12px 15px; 
         }
-        .dashboard-header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin: 0;
-            color: #fff;
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        .card-body { padding: 2rem; }
-        
-        .form-control, .form-select {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            color: #f5f5f5 !important;
-            border-radius: 10px;
-            padding: 12px 15px;
-            transition: all 0.3s;
-        }
-        .form-control::placeholder { color: rgba(255, 255, 255, 0.5) !important; }
-        .form-control:focus, .form-select:focus {
-            background: rgba(255, 255, 255, 0.12) !important;
-            border-color: #e53e3e !important;
-            color: #f5f5f5 !important;
-            box-shadow: 0 0 0 0.3rem rgba(229, 62, 62, 0.2) !important;
-        }
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23f5f5f5' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 16px 12px;
-            padding-right: 2.5rem;
+        .form-control::placeholder { color: rgba(255,255,255,0.6) !important; }
+        .form-control:focus, .form-select:focus { 
+            background: rgba(255,255,255,0.12) !important; 
+            border-color: #e53e3e !important; 
+            color: #f5f5f5 !important; 
+            box-shadow: 0 0 0 0.2rem rgba(229, 62, 62, 0.25) !important; 
         }
         .form-select option {
-            background: #1a1a1d;
+            background: #151517;
             color: #f5f5f5;
         }
         .form-select option:checked {
             background: linear-gradient(#e53e3e, #e53e3e);
-            color: #fff;
-        }
-        
-        .form-label {
             color: #f5f5f5;
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
         }
-        
-        .section-title {
-            color: #e53e3e;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 2.5rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid rgba(229, 62, 62, 0.3);
-            padding-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn {
-            border-radius: 10px;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #e53e3e, #b30000);
+        .form-label { color: #f5f5f5; font-weight: 500; margin-bottom: 8px; }
+        .btn-primary { background: linear-gradient(135deg, #e53e3e, #b30000); border: none; border-radius: 10px; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3); }
+        .section-title { color: #e53e3e; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(229, 62, 62, 0.3); padding-bottom: 0.5rem; }
+        .img-preview { border-radius: 10px; max-height: 200px; object-fit: cover; }
+        .img-box { position: relative; display: inline-block; margin: 10px; }
+        .thumb { width: 150px; height: 150px; object-fit: cover; border-radius: 10px; border: 2px solid rgba(229, 62, 62, 0.3); }
+        .delete-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #dc3545;
+            color: #fff;
             border: none;
-            color: #fff;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3);
-            color: #fff;
-        }
-        .btn-outline-light {
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .btn-outline-light:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.5);
-            color: #fff;
-        }
-        
-        .form-check { padding-left: 0; }
-        .form-check-input {
-            width: 1.25rem;
-            height: 1.25rem;
-            margin-left: 0;
-            margin-right: 0.75rem;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .form-check-input:checked {
-            background: #e53e3e;
-            border-color: #e53e3e;
-        }
-        .form-check-label {
-            color: #f5f5f5;
-            cursor: pointer;
-            margin-bottom: 0;
-        }
-        .form-switch .form-check-input {
-            width: 2.5rem;
-            height: 1.5rem;
-            border-radius: 1rem;
-        }
-        
-        .invalid-feedback {
-            color: #ff6b7a;
-            display: block;
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
-        }
-        
-        .input-group-text {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            color: #f5f5f5 !important;
-            border-radius: 10px;
-        }
-        
-        .alert {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: #f5f5f5;
-        }
-        .alert-success {
-            background: rgba(40, 167, 69, 0.1) !important;
-            border-left: 4px solid #28a745;
-            color: #6bcf7e !important;
-        }
-        
-        .img-preview-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-        }
-        .img-preview-item {
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 2px solid rgba(229, 62, 62, 0.3);
-            transition: all 0.2s;
-        }
-        .img-preview-item:hover {
-            border-color: rgba(229, 62, 62, 0.6);
-            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
-        }
-        .img-preview {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-        .img-name {
-            font-size: 0.75rem;
-            color: #999;
-            padding: 0.5rem;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 18px;
+            line-height: 32px;
             text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            background: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        
-        .text-muted {
-            color: rgba(255, 255, 255, 0.6) !important;
-            font-size: 0.85rem;
-        }
-        
-        @media (max-width: 768px) {
-            .dashboard-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            .card-body { padding: 1.5rem; }
-        }
+        .delete-btn:hover { background: #c82333; transform: scale(1.1); }
+        .form-check-input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); }
+        .form-check-input:checked { background: #e53e3e; border-color: #e53e3e; }
+        .invalid-feedback { color: #ff6b7a; display: block; }
+        .input-group-text { background: #151517 !important; border: 1px solid rgba(255,255,255,0.2) !important; color: #f5f5f5 !important; }
     </style>
 </head>
 
-<body>
-<div class="container-dashboard">
+<body class="p-3 p-md-4">
+<div class="container-fluid" style="max-width: 900px;">
 
-    <div class="dashboard-header">
-        <h1><i class="fas fa-cube me-3" style="color: #e53e3e;"></i>Editar Produto #<?= (int)$produto['id'] ?></h1>
+    <!-- CABEÇALHO -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 m-0">Editar Produto #<?= (int)$produto['id'] ?></h1>
         <a href="<?= BASE_URL ?>/dashboard/produtos" class="btn btn-outline-light">
             <i class="fa fa-arrow-left me-2"></i> Voltar
         </a>
     </div>
 
+    <!-- FLASH MESSAGE -->
     <?php if (!empty($_SESSION['flash_message'])): 
         $f = $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?>
         <div class="alert alert-<?= $f['type'] ?? 'info' ?> alert-dismissible fade show" role="alert">
-            <i class="fas fa-<?= $f['type'] === 'success' ? 'check-circle' : 'exclamation-circle' ?> me-2"></i>
             <?= htmlspecialchars($f['text'] ?? '') ?>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
 
+    <!-- FORMULÁRIO -->
     <div class="card shadow-lg">
-        <div class="card-body">
+        <div class="card-body p-4">
             <form method="post" enctype="multipart/form-data" action="<?= BASE_URL ?>/dashboard/produtos/<?= (int)$produto['id'] ?>/atualizar" id="formEditProduct" novalidate>
 
-                <div class="section-title">
-                    <i class="fas fa-info-circle"></i>
-                    Informações Básicas
-                </div>
+                <!-- INFORMAÇÕES BÁSICAS -->
+                <h6 class="section-title"><i class="fas fa-info-circle me-2"></i>Informações Básicas</h6>
 
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Nome do Produto *</label>
-                        <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($produto['nome']) ?>" required minlength="3" maxlength="180">
-                        <div class="invalid-feedback">Nome é obrigatório (mínimo 3 caracteres)</div>
+                        <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($produto['nome'] ?? '') ?>" required minlength="3" maxlength="180">
+                        <div class="invalid-feedback">Nome é obrigatório</div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">Marca *</label>
-                        <input type="text" name="marca" class="form-control" value="<?= htmlspecialchars($produto['marca'] ?? '') ?>" required minlength="2" maxlength="120">
+                        <input type="text" name="brand" class="form-control" value="<?= htmlspecialchars($produto['marca'] ?? '') ?>" required minlength="2" maxlength="120">
                         <div class="invalid-feedback">Marca é obrigatória</div>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Descrição *</label>
-                    <textarea name="descricao" class="form-control" rows="4" required minlength="10" maxlength="1000"><?= htmlspecialchars($produto['descricao']) ?></textarea>
+                    <textarea name="description" class="form-control" rows="4" required minlength="10" maxlength="1000"><?= htmlspecialchars($produto['descricao'] ?? '') ?></textarea>
                     <div class="invalid-feedback">Descrição é obrigatória</div>
                 </div>
 
-                <div class="section-title">
-                    <i class="fas fa-tag"></i>
-                    Categoria e Preço
-                </div>
+                <!-- CATEGORIA E PREÇO -->
+                <h6 class="section-title"><i class="fas fa-tag me-2"></i>Categoria e Preço</h6>
 
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Categoria *</label>
-                        <select name="categoria_id" class="form-select" required>
-                            <option value="" disabled>Selecione uma categoria...</option>
+                        <select name="category_id" class="form-select" required>
                             <?php foreach (($categorias ?? []) as $cat): ?>
-                                <option value="<?= (int)$cat['id'] ?>" <?= ($cat['id'] == ($produto['categoria_id'] ?? 0)) ? 'selected' : '' ?>>
+                                <option value="<?= (int)$cat['id'] ?>" <?= ($produto['categoria_id'] ?? 0) == $cat['id'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($cat['nome']) ?>
                                 </option>
                             <?php endforeach; ?>
@@ -296,26 +137,25 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
 
                     <div class="col-md-6">
                         <label class="form-label">Preço (R$) *</label>
-                        <input type="number" name="preco" class="form-control" step="0.01" min="0" value="<?= number_format((float)($produto['preco'] ?? 0), 2, '.', '') ?>" required>
+                        <input type="number" name="price" class="form-control" step="0.01" min="0" value="<?= htmlspecialchars($produto['preco'] ?? '') ?>" required>
                         <div class="invalid-feedback">Preço é obrigatório</div>
                     </div>
                 </div>
 
-                <div class="section-title">
-                    <i class="fas fa-box"></i>
-                    Estoque e Status
-                </div>
+                <!-- ESTOQUE E STATUS -->
+                <h6 class="section-title"><i class="fas fa-box me-2"></i>Estoque e Status</h6>
 
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Quantidade em Estoque *</label>
-                        <input type="number" name="estoque" class="form-control" min="0" value="<?= (int)($produto['estoque'] ?? 0) ?>" required>
+                        <input type="number" name="stock_quantity" class="form-control" min="0" value="<?= (int)($produto['estoque'] ?? 0) ?>" required>
                         <div class="invalid-feedback">Estoque é obrigatório</div>
                     </div>
 
                     <div class="col-md-6">
+                        <label class="form-label">Status</label>
                         <div class="form-check form-switch pt-2">
-                            <input class="form-check-input" type="checkbox" name="ativo" value="1" id="statusAtivo" <?= ($produto['ativo'] ?? 0) ? 'checked' : '' ?>>
+                            <input class="form-check-input" type="checkbox" name="active" value="1" id="statusAtivo" <?= ($produto['ativo'] ?? 1) == 1 ? 'checked' : '' ?>>
                             <label class="form-check-label" for="statusAtivo">
                                 Ativo (visível no catálogo)
                             </label>
@@ -323,41 +163,39 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
                     </div>
                 </div>
 
-                <div class="form-check form-switch mb-3 pb-3" style="border-bottom: 2px solid rgba(229, 62, 62, 0.3);">
-                    <input class="form-check-input" type="checkbox" name="destaque" value="1" id="destaque" <?= ($produto['destaque'] ?? 0) ? 'checked' : '' ?>>
-                    <label class="form-check-label fw-bold" for="destaque" style="color: #e53e3e;">
-                        <i class="fas fa-star me-2"></i>Marcar como Destaque (exibir na home)
-                    </label>
-                </div>
-
-                <?php if (!empty($produto['imagem'])): ?>
-                <div class="section-title">
-                    <i class="fas fa-images"></i>
-                    Imagens Atuais
-                </div>
-
-                <div class="img-preview-container mb-4">
-                    <?php 
-                    $imagens = is_array($produto['imagem']) ? $produto['imagem'] : (json_decode($produto['imagem'], true) ?? [$produto['imagem']]);
-                    foreach ((array)$imagens as $idx => $img):
-                        if (empty($img)) continue;
-                        $isValidUrl = filter_var($img, FILTER_VALIDATE_URL);
-                    ?>
-                    <div class="img-preview-item">
-                        <img src="<?= $isValidUrl ? htmlspecialchars($img) : BASE_URL . '/public/images/products/' . htmlspecialchars($img) ?>" class="img-preview" alt="Produto">
-                        <div class="img-name" title="<?= htmlspecialchars($img) ?>"><?= htmlspecialchars(basename($img)) ?></div>
+                <!-- DESTAQUE -->
+                <div class="mb-3">
+                    <div class="form-check form-switch pt-2">
+                        <input class="form-check-input" type="checkbox" name="featured" value="1" id="destaque" <?= ($produto['destaque'] ?? 0) == 1 ? 'checked' : '' ?>>
+                        <label class="form-check-label fw-bold" for="destaque" style="color: #e53e3e;">
+                            <i class="fas fa-star me-2"></i>Marcar como Destaque (exibir na home)
+                        </label>
                     </div>
-                    <?php endforeach; ?>
+                </div>
+
+                <!-- IMAGENS -->
+                <h6 class="section-title"><i class="fas fa-image me-2"></i>Imagens do Produto</h6>
+
+                <!-- GALERIA ATUAL -->
+                <?php if (!empty($produto['images'])): ?>
+                <div class="mb-4">
+                    <label class="form-label mb-3">Imagens Atuais</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <?php foreach ($produto['images'] as $img): ?>
+                        <div class="img-box">
+                            <img src="<?= BASE_URL . '/' . $img['image_path'] ?>" class="thumb" alt="Produto">
+                            <a href="<?= BASE_URL ?>/dashboard/produtos/imagem/<?= $img['id'] ?>/deletar" onclick="return confirm('Deseja excluir esta imagem?')" class="delete-btn" title="Deletar imagem">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
                 <?php endif; ?>
 
-                <div class="section-title">
-                    <i class="fas fa-image"></i>
-                    Imagens do Produto
-                </div>
-
+                <!-- UPLOAD NOVAS IMAGENS -->
                 <div class="mb-3">
-                    <label class="form-label">Adicionar Novas Imagens (Opcional)</label>
+                    <label class="form-label">Adicionar Novas Imagens</label>
                     <div class="input-group">
                         <input type="file" name="imagens[]" class="form-control" accept="image/*" multiple id="fileImages">
                         <label class="input-group-text" for="fileImages">
@@ -365,15 +203,16 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
                         </label>
                     </div>
                     <small class="text-muted d-block mt-2">
-                        <i class="fas fa-info-circle"></i> Formatos: JPG, PNG, WebP | Máx. 5MB por imagem
+                        <i class="fas fa-info-circle"></i> Formatos: JPG, PNG, WebP | Máx. 5MB por imagem | Você pode adicionar quantas fotos desejar
                     </small>
                 </div>
 
-                <div id="imagePreview" class="img-preview-container mb-4"></div>
+                <div id="imagePreview" class="row g-2 mb-3"></div>
 
-                <div class="d-grid gap-2 pt-2">
+                <!-- BOTÕES -->
+                <div class="d-grid gap-2 pt-3">
                     <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="fas fa-save me-2"></i>Atualizar Produto
+                        <i class="fas fa-check me-2"></i>Salvar Alterações
                     </button>
                     <a href="<?= BASE_URL ?>/dashboard/produtos" class="btn btn-outline-light">
                         Cancelar
@@ -388,6 +227,7 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Preview de imagens
     document.getElementById('fileImages').addEventListener('change', function(e) {
         const preview = document.getElementById('imagePreview');
         preview.innerHTML = '';
@@ -399,18 +239,21 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
             
             const reader = new FileReader();
             reader.onload = function(event) {
-                const item = document.createElement('div');
-                item.className = 'img-preview-item';
-                item.innerHTML = `
-                    <img src="${event.target.result}" class="img-preview" alt="Preview">
-                    <div class="img-name" title="${file.name}">${file.name}</div>
+                const col = document.createElement('div');
+                col.className = 'col-md-4 col-lg-3';
+                col.innerHTML = `
+                    <div style="position: relative;">
+                        <img src="${event.target.result}" class="img-preview img-fluid" alt="Preview ${index + 1}" style="border-radius: 10px; border: 2px solid rgba(229, 62, 62, 0.3);">
+                        <small class="text-muted d-block text-center mt-2">${file.name}</small>
+                    </div>
                 `;
-                preview.appendChild(item);
+                preview.appendChild(col);
             };
             reader.readAsDataURL(file);
         });
     });
 
+    // Validação do formulário
     document.getElementById('formEditProduct').addEventListener('submit', function(e) {
         if (!this.checkValidity()) {
             e.preventDefault();

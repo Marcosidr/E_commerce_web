@@ -11,12 +11,28 @@ if (!function_exists('getProductImageUrl')) {
      * Fallback para imagem padrão se não encontrar
      */
     function getProductImageUrl($productId, $size = 'medium') {
+        // Primeiro, tentar recuperar imagens associadas ao produto no banco
+        try {
+            $productModel = new \App\Models\Product();
+            $imgs = $productModel->getImages((int)$productId);
+            if (!empty($imgs)) {
+                // Retornar a primeira imagem cadastrada (caminho relativo salvo no DB)
+                $first = $imgs[0]['image_path'] ?? '';
+                if ($first) {
+                    return BASE_URL . '/' . ltrim($first, '/');
+                }
+            }
+        } catch (\Throwable $e) {
+            // se algo falhar ao instanciar o model, continuar para fallback por arquivo
+        }
+
+        // Fallback: procurar por arquivo nomeado pelo ID (compatibilidade antiga)
         $basePath = PUBLIC_PATH . '/images/products/';
         $baseUrl = BASE_URL . '/images/products/';
-        
+
         // Formatos suportados em ordem de preferência
         $formats = ['webp', 'jpg', 'jpeg', 'png', 'svg'];
-        
+
         // Tamanhos disponíveis
         $sizePrefix = '';
         switch ($size) {
@@ -31,17 +47,17 @@ if (!function_exists('getProductImageUrl')) {
                 $sizePrefix = '';
                 break;
         }
-        
+
         // Procura pela imagem em diferentes formatos
         foreach ($formats as $format) {
             $filename = $sizePrefix . $productId . '.' . $format;
             $filePath = $basePath . $filename;
-            
+
             if (file_exists($filePath)) {
                 return $baseUrl . $filename;
             }
         }
-        
+
         // Fallback para imagem padrão
         return BASE_URL . '/images/no-product.jpg';
     }

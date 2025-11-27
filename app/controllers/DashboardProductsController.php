@@ -167,10 +167,16 @@ class DashboardProductsController extends Controller
 
     public function update($id)
     {
+        error_log("=== UPDATE() CALLED id=$id ===");
+        
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            error_log("Não é POST, redirecionando");
             header('Location: ' . BASE_URL . '/dashboard/produtos');
             exit;
         }
+
+        error_log("É POST, continuando");
+        error_log("FILES: " . json_encode(array_keys($_FILES)));
 
         $id = (int)$id;
         
@@ -245,7 +251,9 @@ class DashboardProductsController extends Controller
      */
     private function uploadProductImages(int $productId, array $files, ?int $categoryId = null): void
     {
-        // map de categorias → pastas (ajuste IDs conforme seu DB)
+        error_log("=== uploadProductImages() START product_id=$productId, category_id=$categoryId ===");
+        
+        // map de categorias → pastas
         $map = [
             1 => 'tenis',
             2 => 'camisetas',
@@ -255,32 +263,98 @@ class DashboardProductsController extends Controller
         ];
 
         $folder = $map[$categoryId] ?? 'diversos';
+        // Usar PUBLIC_PATH que já está definido em public/index.php
+        $dir = PUBLIC_PATH . '/images/products/' . $folder;
 
-        // caminho absoluto para Windows/XAMPP conforme você informou
-        // ele ficará: public/images/products/{folder}
-        $dir = __DIR__ . '/../../../public/images/products/' . $folder;
+        error_log("=== uploadProductImages() START product_id=$productId, category_id=$categoryId ===");
+        error_log("Folder: $folder, Dir: $dir");
+        error_log("FILES tmp_name count: " . count($files['tmp_name'] ?? []));
 
         if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
+            @mkdir($dir, 0777, true);
+            error_log("Criada pasta: $dir");
+        }
+
+        if (!isset($files['tmp_name']) || !is_array($files['tmp_name'])) {
+            error_log("ERRO: files['tmp_name'] não é array");
+            return;
         }
 
         foreach ($files['tmp_name'] as $i => $tmpName) {
-            if (!$tmpName) continue;
+            error_log("\n--- File $i: $tmpName ---");
 
-            // sanitiza nome e evita colisão
-            $origName = $files['name'][$i];
+            if (!$tmpName) {
+                error_log("tmp_name vazio");
+                continue;
+            }
+
+            $errorCode = $files['error'][$i] ?? 0;
+            if ($errorCode !== UPLOAD_ERR_OK) {
+                error_log("ERRO de upload: $errorCode");
+                continue;
+            }
+
+            $origName = $files['name'][$i] ?? 'unknown';
             $ext = pathinfo($origName, PATHINFO_EXTENSION);
-            $safe = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', pathinfo($origName, PATHINFO_FILENAME));
-            $name = time() . '_' . $safe . '.' . $ext;
+            // Salvar arquivo com nome simples: {productId}.{extensão}
+            $name = $productId . '.' . $ext;
             $path = $dir . DIRECTORY_SEPARATOR . $name;
 
-            if (move_uploaded_file($tmpName, $path)) {
-                // salva no banco o caminho relativo que você já usa
-                // ex: images/products/camisetas/nome.jpg
+            error_log("Orig: $origName, Ext: $ext, Name: $name");
+            error_log("Target: $path");
+            error_log("Realpath target: " . (realpath($path) ?: 'N/A'));
+            error_log("is_uploaded_file: " . (is_uploaded_file($tmpName) ? 'YES' : 'NO'));
+            error_log("tmp exists: " . (file_exists($tmpName) ? 'YES' : 'NO'));
+
+            $moved = false;
+            
+            // No Windows/XAMPP, move_uploaded_file às vezes falha silenciosamente
+            // Então tentamos copy() + unlink() primeiro
+            if (file_exists($tmpName)) {
+                error_log("Tentando copy() primeiro (mais confiável no Windows)");
+                $copied = @copy($tmpName, $path);
+                error_log("copy: " . ($copied ? 'SUCCESS' : 'FAILED'));
+                
+                if ($copied && file_exists($path)) {
+                    @unlink($tmpName);
+                    error_log("Arquivo copiado e temp deletado");
+                    $moved = true;
+                } elseif (!$copied && is_uploaded_file($tmpName)) {
+                    // Se copy falhar, tenta move_uploaded_file como fallback
+                    error_log("copy falhou, tentando move_uploaded_file");
+                    $moved = @move_uploaded_file($tmpName, $path);
+                    error_log("move_uploaded_file: " . ($moved ? 'SUCCESS' : 'FAILED'));
+                }
+            } elseif (is_uploaded_file($tmpName)) {
+                // Se não for file_exists mas for uploaded_file, tenta move direto
+                error_log("Arquivo temporário não encontrado mas é uploaded_file, tentando move_uploaded_file");
+                $moved = @move_uploaded_file($tmpName, $path);
+                error_log("move_uploaded_file: " . ($moved ? 'SUCCESS' : 'FAILED'));
+            }
+
+            error_log("File exists after move/copy: " . (file_exists($path) ? 'YES' : 'NO'));
+
+            if ($moved && file_exists($path)) {
+                // Verificação extra: checar tamanho do arquivo para confirmar que realmente foi criado
+                $fileSize = filesize($path);
+                error_log("Arquivo criado com sucesso! Tamanho: $fileSize bytes");
+                
                 $relative = 'images/products/' . $folder . '/' . $name;
+                error_log("Salvando no BD: $relative");
                 $this->productModel->addImage($productId, $relative);
+                error_log("Salvo com sucesso no BD");
+            } else {
+                error_log("FALHA: arquivo não foi movido/copiado ou não existe");
+                error_log("moved=$moved, file_exists=" . (file_exists($path) ? 'YES' : 'NO'));
+                if (!$moved) {
+                    error_log("Motivo: move/copy falhou");
+                } else {
+                    error_log("Motivo: arquivo não existe após move/copy retornar sucesso");
+                }
             }
         }
+
+        error_log("=== uploadProductImages() END ===\n");
     }
 
     public function deleteImage($imageId)
