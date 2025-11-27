@@ -300,6 +300,7 @@ class DashboardProductsController extends Controller
 
             error_log("Orig: $origName, Ext: $ext, Safe: $safe, Name: $name");
             error_log("Target: $path");
+            error_log("Realpath target: " . (realpath($path) ?: 'N/A'));
             error_log("is_uploaded_file: " . (is_uploaded_file($tmpName) ? 'YES' : 'NO'));
             error_log("tmp exists: " . (file_exists($tmpName) ? 'YES' : 'NO'));
 
