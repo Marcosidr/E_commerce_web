@@ -50,6 +50,8 @@ $router->add('/^dashboard\/produtos$/', 'DashboardProducts', 'index');
 $router->add('/^dashboard\/produtos\/(?P<id>\d+)\/editar$/', 'DashboardProducts', 'edit');
 $router->add('/^dashboard\/produtos\/(?P<id>\d+)\/atualizar$/', 'DashboardProducts', 'update');
 $router->add('/^dashboard\/produtos\/(?P<id>\d+)\/destaque$/', 'DashboardProducts', 'toggleFeatured');
+// Rota para deletar imagem de produto (galeria)
+$router->add('/^dashboard\/produtos\/imagem\/(?P<id>\d+)\/deletar$/', 'DashboardProducts', 'deleteImage');
 
 // Dashboard > Pedidos
 $router->add('/^dashboard\/pedidos$/', 'DashboardOrders', 'index');
