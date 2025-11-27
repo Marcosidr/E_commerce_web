@@ -289,7 +289,7 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
     <!-- FORMULÁRIO -->
     <div class="card shadow-lg">
         <div class="card-body">
-            <form method="post" enctype="multipart/form-data" action="<?= BASE_URL ?>/dashboard/produtos/create" id="formAddProduct" novalidate>
+            <form method="post" enctype="multipart/form-data" action="<?= BASE_URL ?>/dashboard/produtos/store" id="formAddProduct" novalidate>
 
                 <!-- INFORMAÇÕES BÁSICAS -->
                 <div class="section-title">

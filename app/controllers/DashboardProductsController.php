@@ -63,12 +63,13 @@ class DashboardProductsController extends Controller
         }
 
         // Validação obrigatória
-        $nome = trim($_POST['name'] ?? '');
-        $descricao = trim($_POST['description'] ?? '');
-        $preco = isset($_POST['price']) ? (float)$_POST['price'] : 0;
-        $marca = trim($_POST['brand'] ?? '');
-        $estoque = isset($_POST['stock_quantity']) ? (int)$_POST['stock_quantity'] : 0;
-        $categoria_id = isset($_POST['category_id']) ? (int)$_POST['category_id'] : null;
+        // aceita nomes em português ou inglês (compatibilidade)
+        $nome = trim($_POST['nome'] ?? $_POST['name'] ?? '');
+        $descricao = trim($_POST['descricao'] ?? $_POST['description'] ?? '');
+        $preco = isset($_POST['preco']) ? (float)$_POST['preco'] : (isset($_POST['price']) ? (float)$_POST['price'] : 0);
+        $marca = trim($_POST['marca'] ?? $_POST['brand'] ?? '');
+        $estoque = isset($_POST['estoque']) ? (int)$_POST['estoque'] : (isset($_POST['stock_quantity']) ? (int)$_POST['stock_quantity'] : 0);
+        $categoria_id = isset($_POST['categoria_id']) ? (int)$_POST['categoria_id'] : (isset($_POST['category_id']) ? (int)$_POST['category_id'] : null);
 
         // Validações
         $erros = [];
@@ -108,9 +109,9 @@ class DashboardProductsController extends Controller
             'preco' => $preco,
             'marca' => $marca,
             'estoque' => $estoque,
-            'ativo' => isset($_POST['active']) ? (int)$_POST['active'] : 1,
+            'ativo' => isset($_POST['ativo']) ? (int)$_POST['ativo'] : (isset($_POST['active']) ? (int)$_POST['active'] : 1),
             'categoria_id' => $categoria_id,
-            'destaque' => isset($_POST['featured']) ? (int)$_POST['featured'] : 0,
+            'destaque' => isset($_POST['destaque']) ? (int)$_POST['destaque'] : (isset($_POST['featured']) ? (int)$_POST['featured'] : 0),
             'criado_em' => date('Y-m-d H:i:s'),
             'atualizado_em' => date('Y-m-d H:i:s'),
         ];
@@ -124,10 +125,13 @@ class DashboardProductsController extends Controller
             exit;
         }
 
-        // upload imagens (se houver)
-        if (!empty($_FILES['images']['name'][0]) && $newId) {
-            // passa categoria para a função de organizar pasta
-            $this->uploadProductImages($newId, $_FILES['images'], $categoria_id);
+        // upload imagens (se houver) - aceita 'imagens' (pt) ou 'images' (en)
+        if ($newId) {
+            if (!empty($_FILES['imagens']['name'][0])) {
+                $this->uploadProductImages($newId, $_FILES['imagens'], $categoria_id);
+            } elseif (!empty($_FILES['images']['name'][0])) {
+                $this->uploadProductImages($newId, $_FILES['images'], $categoria_id);
+            }
         }
 
         $_SESSION['flash_message'] = ['type'=>'success','text'=>'Produto criado com sucesso!'];
@@ -170,13 +174,13 @@ class DashboardProductsController extends Controller
 
         $id = (int)$id;
         
-        // Validação obrigatória
-        $nome = trim($_POST['name'] ?? '');
-        $descricao = trim($_POST['description'] ?? '');
-        $preco = isset($_POST['price']) ? (float)$_POST['price'] : 0;
-        $marca = trim($_POST['brand'] ?? '');
-        $estoque = isset($_POST['stock_quantity']) ? (int)$_POST['stock_quantity'] : 0;
-        $categoria_id = isset($_POST['category_id']) ? (int)$_POST['category_id'] : null;
+        // aceita nomes em português ou inglês (compatibilidade)
+        $nome = trim($_POST['nome'] ?? $_POST['name'] ?? '');
+        $descricao = trim($_POST['descricao'] ?? $_POST['description'] ?? '');
+        $preco = isset($_POST['preco']) ? (float)$_POST['preco'] : (isset($_POST['price']) ? (float)$_POST['price'] : 0);
+        $marca = trim($_POST['marca'] ?? $_POST['brand'] ?? '');
+        $estoque = isset($_POST['estoque']) ? (int)$_POST['estoque'] : (isset($_POST['stock_quantity']) ? (int)$_POST['stock_quantity'] : 0);
+        $categoria_id = isset($_POST['categoria_id']) ? (int)$_POST['categoria_id'] : (isset($_POST['category_id']) ? (int)$_POST['category_id'] : null);
 
         // Validações
         $erros = [];
@@ -215,15 +219,17 @@ class DashboardProductsController extends Controller
             'preco'        => $preco,
             'marca'        => $marca,
             'estoque'      => $estoque,
-            'ativo'        => isset($_POST['active']) ? (int)$_POST['active'] : 1,
+            'ativo'        => isset($_POST['ativo']) ? (int)$_POST['ativo'] : (isset($_POST['active']) ? (int)$_POST['active'] : 1),
             'categoria_id' => $categoria_id,
-            'destaque'     => isset($_POST['featured']) ? (int)$_POST['featured'] : 0,
+            'destaque'     => isset($_POST['destaque']) ? (int)$_POST['destaque'] : (isset($_POST['featured']) ? (int)$_POST['featured'] : 0),
         ];
 
         $this->productModel->updateBasic($id, $payload);
 
-        // UPLOAD DE IMAGENS (MULTIPLAS)
-        if (!empty($_FILES['images']['name'][0])) {
+        // UPLOAD DE IMAGENS (MULTIPLAS) - aceita 'imagens' ou 'images'
+        if (!empty($_FILES['imagens']['name'][0])) {
+            $this->uploadProductImages($id, $_FILES['imagens'], $categoria_id);
+        } elseif (!empty($_FILES['images']['name'][0])) {
             $this->uploadProductImages($id, $_FILES['images'], $categoria_id);
         }
 
