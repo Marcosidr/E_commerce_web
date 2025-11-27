@@ -4,311 +4,316 @@ namespace App\Models;
 
 use App\Core\Model;
 
-/**
- * Product Model - URBANSTREET
- * Gerencia produtos da loja
- */
 class Product extends Model
 {
     protected $table = 'produtos';
-    
+
     /**
-     * Lista produtos para administração (campos essenciais)
+     * Lista produtos para administração
      */
     public function getAllForAdmin($limit = 100, $offset = 0)
     {
-        $sql = "SELECT id, nome, preco, destaque, ativo, estoque FROM {$this->table} ORDER BY criado_em DESC LIMIT :limit OFFSET :offset";
+        $sql = "SELECT id, nome, preco, destaque, ativo, estoque
+                FROM {$this->table}
+                ORDER BY criado_em DESC
+                LIMIT :limit OFFSET :offset";
+
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
         $stmt->execute();
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
-    
+
+
     /**
-     * Altera flag de destaque do produto
+     * Define/Remove destaque do produto
      */
     public function setFeatured(int $id, bool $featured): bool
     {
-        $sql = "UPDATE {$this->table} SET destaque = :destaque, atualizado_em = NOW() WHERE id = :id";
+        $sql = "UPDATE {$this->table}
+                SET destaque = :destaque,
+                    atualizado_em = NOW()
+                WHERE id = :id";
+
         $stmt = $this->db->prepare($sql);
-        $val = $featured ? 1 : 0;
-        $stmt->bindParam(':destaque', $val, \PDO::PARAM_INT);
+
+        $value = $featured ? 1 : 0;
+
+        $stmt->bindParam(':destaque', $value, \PDO::PARAM_INT);
         $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+
         return $stmt->execute();
     }
-    
+
+
     /**
-     * Atualiza campos básicos de produto (admin)
-     */
-    public function updateBasic(int $id, array $data): bool
-    {
-        $allowed = ['nome','preco','marca','estoque','ativo','categoria_id','destaque'];
-        $payload = [];
-        foreach ($allowed as $field) {
-            if (array_key_exists($field, $data)) {
-                $payload[$field] = $data[$field];
-            }
-        }
-        if (empty($payload)) return false;
-        // garante updated_at
-        $payload['atualizado_em'] = date('Y-m-d H:i:s');
-        return (bool) $this->update($id, $payload);
-    }
-    
-    /**
-     * Busca produtos em destaque
+     * Produtos em destaque (Home)
      */
     public function getFeatured($limit = 4)
     {
-        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
-            FROM {$this->table} p 
-            LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE p.destaque = 1 AND p.ativo = 1 
-            ORDER BY p.criado_em DESC 
+        $sql = "SELECT p.*, c.nome AS category_name, c.slug AS category_slug
+                FROM {$this->table} p
+                LEFT JOIN categorias c ON p.categoria_id = c.id
+                WHERE p.destaque = 1 AND p.ativo = 1
+                ORDER BY p.criado_em DESC
                 LIMIT :limit";
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
-    
+
+
     /**
-     * Busca produtos ativos com paginação
+     * Atualização básica para o painel admin
      */
-    public function getActive($limit = 12, $offset = 0)
+    public function updateBasic(int $id, array $data): bool
     {
-        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
-            FROM {$this->table} p 
-            LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE p.ativo = 1 
-            ORDER BY p.criado_em DESC 
-                LIMIT :limit OFFSET :offset";
-        
+        $allowed = [
+            'nome', 'descricao', 'preco', 'marca',
+            'estoque', 'ativo', 'categoria_id', 'destaque'
+        ];
+
+        $payload = [];
+
+        foreach ($allowed as $field) {
+            if (isset($data[$field])) {
+                $payload[$field] = $data[$field];
+            }
+        }
+
+        if (empty($payload)) return false;
+
+        $payload['atualizado_em'] = date('Y-m-d H:i:s');
+
+        return $this->update($id, $payload);
+    }
+
+
+    /**
+     * Buscar produto por ID
+     */
+    public function findById($id)
+    {
+        $sql = "SELECT p.*, c.nome AS category_name, c.slug AS category_slug
+                FROM {$this->table} p
+                LEFT JOIN categorias c ON p.categoria_id = c.id
+                WHERE p.id = :id
+                LIMIT 1";
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
-    
-    /**
-     * Conta produtos ativos
-     */
-    public function countActive()
+
+
+    public function getById($id)
     {
-        return $this->count('ativo = 1');
+        return $this->findById($id);
     }
-    
+
+
     /**
-     * Busca produtos por categoria
+     * Cria produto no banco
      */
-    public function getByCategory($categoryId, $limit = 12, $offset = 0)
+    public function create($data)
+{
+    $fields = [];
+    $placeholders = [];
+    $params = [];
+
+    foreach ($data as $k => $v) {
+        $fields[] = $k;
+        $placeholders[] = ':' . $k;
+        $params[':' . $k] = $v;
+    }
+
+    $sql = "INSERT INTO {$this->table} (" . implode(',', $fields) . ")
+            VALUES (" . implode(',', $placeholders) . ")";
+
+    $stmt = $this->db->prepare($sql);
+    $ok = $stmt->execute($params);
+
+    return $ok ? (int)$this->db->lastInsertId() : false;
+}
+
+
+    /**
+     * Retorna um registro da galeria por ID
+     */
+    public function getImageById(int $imageId)
     {
-        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
-            FROM {$this->table} p 
-            LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE p.categoria_id = :category_id AND p.ativo = 1 
-            ORDER BY p.criado_em DESC 
-                LIMIT :limit OFFSET :offset";
-        
+        $sql = "SELECT id, image_path 
+                FROM product_images 
+                WHERE id = :id 
+                LIMIT 1";
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':category_id', $categoryId, \PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt->execute([':id' => $imageId]);
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
-    
+
+
     /**
-     * Conta produtos por categoria
-     */
-    public function countByCategory($categoryId)
-    {
-        return $this->count("categoria_id = {$categoryId} AND ativo = 1");
-    }
-    
-    /**
-     * Busca produtos relacionados
+     * Produtos relacionados
      */
     public function getRelated($categoryId, $excludeId, $limit = 4)
     {
-        $sql = "SELECT p.*, c.nome as category_name 
-            FROM {$this->table} p 
-            LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE p.categoria_id = :category_id 
-                AND p.id != :exclude_id 
-            AND p.ativo = 1 
-                ORDER BY RAND() 
+        $sql = "SELECT p.*, c.nome AS category_name
+                FROM {$this->table} p
+                LEFT JOIN categorias c ON p.categoria_id = c.id
+                WHERE p.categoria_id = :cat
+                AND p.id != :exclude
+                AND p.ativo = 1
+                ORDER BY RAND()
                 LIMIT :limit";
-        
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':category_id', $categoryId, \PDO::PARAM_INT);
-        $stmt->bindParam(':exclude_id', $excludeId, \PDO::PARAM_INT);
+        $stmt->bindParam(':cat', $categoryId, \PDO::PARAM_INT);
+        $stmt->bindParam(':exclude', $excludeId, \PDO::PARAM_INT);
         $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
-    
+
+
     /**
-     * Busca produtos por termo
-     */
-    public function search($term)
-    {
-        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
-            FROM {$this->table} p 
-            LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE (p.nome LIKE :term OR p.descricao LIKE :term) 
-            AND p.ativo = 1 
-            ORDER BY p.nome ASC";
-        
-        $stmt = $this->db->prepare($sql);
-        $searchTerm = "%{$term}%";
-        $stmt->bindParam(':term', $searchTerm);
-        $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }
-    
-    /**
-     * Busca produtos com filtros aplicados
+     * Filtros do catálogo
      */
     public function getByFilters($filters)
     {
-        // Se há busca, usar método de busca separado
         if (!empty($filters['search'])) {
-            return $this->searchWithFilters($filters);
+            return $this->search($filters['search']);
         }
-        
-        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
-            FROM {$this->table} p 
-            LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE p.ativo = 1";
+
+        $sql = "SELECT p.*, c.nome AS category_name, c.slug AS category_slug
+                FROM {$this->table} p
+                LEFT JOIN categorias c ON p.categoria_id = c.id
+                WHERE p.ativo = 1";
+
         $params = [];
 
         if (!empty($filters['category'])) {
             $sql .= " AND p.categoria_id = :category";
             $params['category'] = $filters['category'];
         }
-        
+
         if (!empty($filters['price_min'])) {
-            $sql .= " AND p.preco >= :price_min";
-            $params['price_min'] = $filters['price_min'];
+            $sql .= " AND p.preco >= :min";
+            $params['min'] = $filters['price_min'];
         }
-        
+
         if (!empty($filters['price_max'])) {
-            $sql .= " AND p.preco <= :price_max";
-            $params['price_max'] = $filters['price_max'];
+            $sql .= " AND p.preco <= :max";
+            $params['max'] = $filters['price_max'];
         }
-        
+
         if (!empty($filters['brand'])) {
             $sql .= " AND p.marca = :brand";
             $params['brand'] = $filters['brand'];
         }
 
-        // Ordenação
         switch ($filters['sort'] ?? 'recent') {
             case 'price_asc':
-                $sql .= " ORDER BY p.preco ASC"; break;
+                $sql .= " ORDER BY p.preco ASC";
+                break;
             case 'price_desc':
-                $sql .= " ORDER BY p.preco DESC"; break;
+                $sql .= " ORDER BY p.preco DESC";
+                break;
             default:
-                $sql .= " ORDER BY p.criado_em DESC"; break;
+                $sql .= " ORDER BY p.criado_em DESC";
         }
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }
-    
-    /**
-     * Busca produtos com termo de pesquisa e filtros
-     */
-    private function searchWithFilters($filters)
-    {
-        $searchTerm = "%{$filters['search']}%";
-        
-        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
-            FROM {$this->table} p 
-            LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE p.ativo = 1 
-            AND (p.nome LIKE ? OR p.descricao LIKE ?)";
-        
-        $params = [$searchTerm, $searchTerm];
-        
-        // Adicionar outros filtros se necessário
-        if (!empty($filters['category'])) {
-            $sql .= " AND p.categoria_id = ?";
-            $params[] = $filters['category'];
-        }
-        
-        if (!empty($filters['brand'])) {
-            $sql .= " AND p.marca = ?";
-            $params[] = $filters['brand'];
-        }
-        
-        if (!empty($filters['price_min'])) {
-            $sql .= " AND p.preco >= ?";
-            $params[] = $filters['price_min'];
-        }
-        
-        if (!empty($filters['price_max'])) {
-            $sql .= " AND p.preco <= ?";
-            $params[] = $filters['price_max'];
-        }
-        
-        // Ordenação
-        switch ($filters['sort'] ?? 'recent') {
-            case 'price_asc':
-                $sql .= " ORDER BY p.preco ASC"; break;
-            case 'price_desc':
-                $sql .= " ORDER BY p.preco DESC"; break;
-            default:
-                $sql .= " ORDER BY p.criado_em DESC"; break;
-        }
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+
     /**
-     * Retorna lista de marcas distintas
+     * Pesquisa por termo
      */
-    public function getDistinctBrands(): array
+    public function search($term)
     {
-        $sql = "SELECT DISTINCT marca FROM {$this->table} 
-            WHERE marca IS NOT NULL AND marca <> '' 
-            ORDER BY marca ASC";
-        $stmt = $this->db->query($sql);
-        return array_map(function($row){ return $row['marca']; }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
-    }
-    
-    /**
-     * Busca produto por ID
-     */
-    public function findById($id)
-    {
-        $sql = "SELECT p.*, c.nome as category_name, c.slug as category_slug 
-            FROM {$this->table} p 
-            LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE p.id = :id AND p.ativo = 1";
+        $sql = "SELECT p.*, c.nome AS category_name, c.slug AS category_slug
+                FROM {$this->table} p
+                LEFT JOIN categorias c ON p.categoria_id = c.id
+                WHERE (p.nome LIKE :term OR p.descricao LIKE :term)
+                AND p.ativo = 1";
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $search = "%$term%";
+        $stmt->bindParam(':term', $search);
         $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+
     /**
-     * Alias para findById (compatibilidade)
+     * Lista de marcas
      */
-    public function getById($id)
+    public function getDistinctBrands()
     {
-        return $this->findById($id);
+        $sql = "SELECT DISTINCT marca
+                FROM {$this->table}
+                WHERE marca IS NOT NULL AND marca <> ''";
+
+        return $this->db->query($sql)->fetchAll(\PDO::FETCH_COLUMN);
     }
-    
+
+
     /**
-     * Formata preço
+     * -------- GALERIA DE IMAGENS --------
+     */
+
+    public function addImage(int $productId, string $path): bool
+    {
+        $sql = "INSERT INTO product_images (product_id, image_path)
+                VALUES (:pid, :path)";
+
+        $stmt = $this->db->prepare($sql);
+
+        return $stmt->execute([
+            ':pid'  => $productId,
+            ':path' => $path
+        ]);
+    }
+
+    public function getImages(int $productId): array
+    {
+        $sql = "SELECT id, image_path
+                FROM product_images
+                WHERE product_id = :pid
+                ORDER BY id DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':pid' => $productId]);
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function deleteImage(int $imageId): bool
+    {
+        $sql = "DELETE FROM product_images WHERE id = :id";
+
+        $stmt = $this->db->prepare($sql);
+
+        return $stmt->execute([':id' => $imageId]);
+    }
+
+
+    /**
+     * Formatar preço
      */
     public static function formatPrice($price)
     {

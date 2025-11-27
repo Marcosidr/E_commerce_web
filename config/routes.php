@@ -68,6 +68,18 @@ $router->add('/^dashboard\/relatorios\/clientes\.(?P<format>csv|xlsx|pdf|docx)$/
 $router->add('/^dashboard\/relatorios\/vendas_diario\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportDailySales');
 $router->add('/^dashboard\/relatorios\/vendas\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportSales');
 
+// Dashboard > Produtos
+$router->add('/^dashboard\/produtos$/', 'DashboardProducts', 'index');
+$router->add('/^dashboard\/produtos\/criar$/', 'DashboardProducts', 'create');
+$router->add('/^dashboard\/produtos\/store$/', 'DashboardProducts', 'store');
+$router->add('/^dashboard\/produtos\/(?P<id>\d+)\/editar$/', 'DashboardProducts', 'edit');
+$router->add('/^dashboard\/produtos\/(?P<id>\d+)\/atualizar$/', 'DashboardProducts', 'update');
+$router->add('/^dashboard\/produtos\/(?P<id>\d+)\/destaque$/', 'DashboardProducts', 'toggleFeatured');
+
+
+
+
+
 
 return $router;
 // $router->get('/admin', [AdminController::class, 'dashboard']);

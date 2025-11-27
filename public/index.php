@@ -10,8 +10,29 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 // Configurações básicas do PHP
 error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// date_default_timezone_set('America/Sao_Paulo');
 ini_set('display_errors', 1);
-date_default_timezone_set('America/Sao_Paulo');
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    echo "<pre style='background:#222;color:#0f0;padding:20px'>
+    <b>PHP ERROR:</b> $errstr  
+    <br>Arquivo: $errfile  
+    <br>Linha: $errline
+    </pre>";
+    die();
+});
+set_exception_handler(function($ex) {
+    echo "<pre style='background:#300;color:#fff;padding:20px'>
+    <b>EXCEPTION:</b> {$ex->getMessage()}  
+    <br>Arquivo: {$ex->getFile()}  
+    <br>Linha: {$ex->getLine()}
+    <br><br>Trace:<br>{$ex->getTraceAsString()}
+    </pre>";
+    die();
+});
+
 
 // Inicia a sessão
 if (session_status() === PHP_SESSION_NONE) {
