@@ -263,16 +263,10 @@ class DashboardProductsController extends Controller
         ];
 
         $folder = $map[$categoryId] ?? 'diversos';
-        $dir = __DIR__ . '/../../../public/images/products/' . $folder;
-        // Normalizar para Windows: converter para caminho realpath
-        $baseDir = realpath(__DIR__ . '/../../../public/images/products');
-        if (!$baseDir) {
-            error_log("ERRO: pasta base não existe: " . __DIR__ . '/../../../public/images/products');
-            return;
-        }
-        $dir = $baseDir . DIRECTORY_SEPARATOR . $folder;
+        // Usar PUBLIC_PATH que já está definido em public/index.php
+        $dir = PUBLIC_PATH . '/images/products/' . $folder;
 
-
+        error_log("=== uploadProductImages() START product_id=$productId, category_id=$categoryId ===");
         error_log("Folder: $folder, Dir: $dir");
         error_log("FILES tmp_name count: " . count($files['tmp_name'] ?? []));
 
@@ -302,11 +296,11 @@ class DashboardProductsController extends Controller
 
             $origName = $files['name'][$i] ?? 'unknown';
             $ext = pathinfo($origName, PATHINFO_EXTENSION);
-            $safe = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', pathinfo($origName, PATHINFO_FILENAME));
-            $name = time() . '_' . $safe . '.' . $ext;
+            // Salvar arquivo com nome simples: {productId}.{extensão}
+            $name = $productId . '.' . $ext;
             $path = $dir . DIRECTORY_SEPARATOR . $name;
 
-            error_log("Orig: $origName, Ext: $ext, Safe: $safe, Name: $name");
+            error_log("Orig: $origName, Ext: $ext, Name: $name");
             error_log("Target: $path");
             error_log("Realpath target: " . (realpath($path) ?: 'N/A'));
             error_log("is_uploaded_file: " . (is_uploaded_file($tmpName) ? 'YES' : 'NO'));
