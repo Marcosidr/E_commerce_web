@@ -332,12 +332,22 @@ class DashboardProductsController extends Controller
             error_log("File exists after move/copy: " . (file_exists($path) ? 'YES' : 'NO'));
 
             if ($moved && file_exists($path)) {
+                // Verificação extra: checar tamanho do arquivo para confirmar que realmente foi criado
+                $fileSize = filesize($path);
+                error_log("Arquivo criado com sucesso! Tamanho: $fileSize bytes");
+                
                 $relative = 'images/products/' . $folder . '/' . $name;
                 error_log("Salvando no BD: $relative");
                 $this->productModel->addImage($productId, $relative);
-                error_log("Salvo com sucesso");
+                error_log("Salvo com sucesso no BD");
             } else {
-                error_log("FALHA: arquivo não foi movido ou não existe");
+                error_log("FALHA: arquivo não foi movido/copiado ou não existe");
+                error_log("moved=$moved, file_exists=" . (file_exists($path) ? 'YES' : 'NO'));
+                if (!$moved) {
+                    error_log("Motivo: move/copy falhou");
+                } else {
+                    error_log("Motivo: arquivo não existe após move/copy retornar sucesso");
+                }
             }
         }
 
