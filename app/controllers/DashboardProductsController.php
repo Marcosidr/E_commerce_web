@@ -245,7 +245,7 @@ class DashboardProductsController extends Controller
      */
     private function uploadProductImages(int $productId, array $files, ?int $categoryId = null): void
     {
-        // map de categorias → pastas (ajuste IDs conforme seu DB)
+        // map de categorias → pastas
         $map = [
             1 => 'tenis',
             2 => 'camisetas',
@@ -255,52 +255,82 @@ class DashboardProductsController extends Controller
         ];
 
         $folder = $map[$categoryId] ?? 'diversos';
-
-        // caminho absoluto para Windows/XAMPP conforme você informou
-        // ele ficará: public/images/products/{folder}
         $dir = __DIR__ . '/../../../public/images/products/' . $folder;
 
+        // Log file
+        $logFile = __DIR__ . '/../../../upload_log.txt';
+        $log = function($msg) use ($logFile) {
+            file_put_contents($logFile, '[' . date('Y-m-d H:i:s') . '] ' . $msg . "\n", FILE_APPEND);
+        };
+
+        $log("=== UPLOAD START product_id=$productId, category=$folder, dir=$dir ===");
+
         if (!is_dir($dir)) {
-            @mkdir($dir, 0777, true);
+            mkdir($dir, 0777, true);
+            $log("Criada pasta: $dir");
+        }
+
+        if (!isset($files['tmp_name']) || !is_array($files['tmp_name'])) {
+            $log("ERRO: files['tmp_name'] não é array ou não existe");
+            return;
         }
 
         foreach ($files['tmp_name'] as $i => $tmpName) {
-            if (!$tmpName) continue;
+            $log("\n--- File $i ---");
+            $log("tmp_name: $tmpName");
+            $log("name: " . ($files['name'][$i] ?? 'N/A'));
+            $log("error: " . ($files['error'][$i] ?? 'N/A'));
+            $log("size: " . ($files['size'][$i] ?? 'N/A'));
 
-            $origName = $files['name'][$i] ?? 'unknown';
-            $errorCode = $files['error'][$i] ?? 0;
-
-            if ($errorCode !== UPLOAD_ERR_OK) {
-                continue; // Pula arquivo com erro
+            if (!$tmpName) {
+                $log("tmp_name vazio, pulando");
+                continue;
             }
 
-            // sanitiza nome e evita colisão
+            $errorCode = $files['error'][$i] ?? 0;
+            if ($errorCode !== UPLOAD_ERR_OK) {
+                $log("ERRO de upload: código $errorCode");
+                continue;
+            }
+
+            $origName = $files['name'][$i] ?? 'unknown';
             $ext = pathinfo($origName, PATHINFO_EXTENSION);
             $safe = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', pathinfo($origName, PATHINFO_FILENAME));
             $name = time() . '_' . $safe . '.' . $ext;
             $path = $dir . DIRECTORY_SEPARATOR . $name;
 
-            $moved = false;
+            $log("Target path: $path");
+            $log("is_uploaded_file: " . (is_uploaded_file($tmpName) ? 'true' : 'false'));
+            $log("tmp file exists: " . (file_exists($tmpName) ? 'true' : 'false'));
+            $log("dir exists: " . (is_dir($dir) ? 'true' : 'false'));
+            $log("dir writable: " . (is_writable($dir) ? 'true' : 'false'));
 
-            // Tenta move_uploaded_file() primeiro
+            $moved = false;
             if (is_uploaded_file($tmpName)) {
                 $moved = @move_uploaded_file($tmpName, $path);
+                $log("move_uploaded_file result: " . ($moved ? 'true' : 'false'));
             }
 
-            // Se falhar, tenta copy() como fallback
             if (!$moved && file_exists($tmpName)) {
-                $moved = @copy($tmpName, $path);
-                if ($moved) {
-                    @unlink($tmpName); // Remove arquivo temp se copy foi bem-sucedido
-                }
+                $copied = @copy($tmpName, $path);
+                $log("copy() fallback result: " . ($copied ? 'true' : 'false'));
+                $moved = $copied;
+                if ($moved) @unlink($tmpName);
             }
 
-            // Se conseguiu mover/copiar, salva referência no BD
+            $log("File exists after move/copy: " . (file_exists($path) ? 'true' : 'false'));
+
             if ($moved && file_exists($path)) {
                 $relative = 'images/products/' . $folder . '/' . $name;
+                $log("Salvando no BD: product_id=$productId, path=$relative");
                 $this->productModel->addImage($productId, $relative);
+                $log("Salvo no BD com sucesso");
+            } else {
+                $log("FALHA: arquivo não foi movido ou não existe após move/copy");
             }
         }
+
+        $log("=== UPLOAD END ===\n");
     }
 
     public function deleteImage($imageId)
