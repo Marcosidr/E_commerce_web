@@ -66,13 +66,33 @@ $router->add('/^dashboard\/pedidos\/(?P<id>\d+)\/deletar$/', 'DashboardOrders', 
 $router->add('/^dashboard\/clientes$/', 'DashboardCustomers', 'index');
 $router->add('/^dashboard\/clientes\/(?P<id>\d+)$/', 'DashboardCustomers', 'show');
 // rotas adicionais para CRUD de clientes
+// =====================
+// DASHBOARD CLIENTES
+// =====================
+$router->add('/^dashboard\/clientes$/', 'DashboardCustomers', 'index');
 $router->add('/^dashboard\/clientes\/adicionar$/', 'DashboardCustomers', 'adicionar');
-$router->add('/^dashboard\/clientes\/criar$/', 'DashboardCustomers', 'adicionar');
 $router->add('/^dashboard\/clientes\/store$/', 'DashboardCustomers', 'store');
-$router->add('/^dashboard\/clientes\/salvar$/', 'DashboardCustomers', 'salvar');
+$router->add('/^dashboard\/clientes\/(?P<id>\d+)$/', 'DashboardCustomers', 'show');
 $router->add('/^dashboard\/clientes\/(?P<id>\d+)\/editar$/', 'DashboardCustomers', 'editar');
-$router->add('/^dashboard\/clientes\/update\/(?P<id>\d+)$/', 'DashboardCustomers', 'update');
-$router->add('/^dashboard\/clientes\/deletar\/(?P<id>\d+)$/', 'DashboardCustomers', 'deletar');
+$router->add('/^dashboard\/clientes\/(?P<id>\d+)\/update$/', 'DashboardCustomers', 'update');
+$router->add('/^dashboard\/clientes\/(?P<id>\d+)\/deletar$/', 'DashboardCustomers', 'deletar');
+
+
+// =====================
+// DASHBOARD PRODUTOS (SEM DUPLICAR)
+// =====================
+// =====================
+// DASHBOARD PRODUTOS
+// =====================
+$router->add('/^dashboard\/produtos$/', 'DashboardProducts', 'index');
+$router->add('/^dashboard\/produtos\/criar$/', 'DashboardProducts', 'create');
+$router->add('/^dashboard\/produtos\/store$/', 'DashboardProducts', 'store');
+$router->add('/^dashboard\/produtos\/(?P<id>\d+)\/editar$/', 'DashboardProducts', 'edit');
+$router->add('/^dashboard\/produtos\/(?P<id>\d+)\/atualizar$/', 'DashboardProducts', 'update');
+$router->add('/^dashboard\/produtos\/(?P<id>\d+)\/destaque$/', 'DashboardProducts', 'toggleFeatured');
+$router->add('/^dashboard\/produtos\/imagem\/(?P<id>\d+)\/deletar$/', 'DashboardProducts', 'deleteImage');
+
+
 
 // Dashboard > Relatórios (exportações)
 $router->add('/^dashboard\/relatorios\/produtos\.(?P<format>csv|xlsx|pdf|docx)$/', 'DashboardReports', 'exportProducts');
