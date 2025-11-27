@@ -264,6 +264,14 @@ class DashboardProductsController extends Controller
 
         $folder = $map[$categoryId] ?? 'diversos';
         $dir = __DIR__ . '/../../../public/images/products/' . $folder;
+        // Normalizar para Windows: converter para caminho realpath
+        $baseDir = realpath(__DIR__ . '/../../../public/images/products');
+        if (!$baseDir) {
+            error_log("ERRO: pasta base não existe: " . __DIR__ . '/../../../public/images/products');
+            return;
+        }
+        $dir = $baseDir . DIRECTORY_SEPARATOR . $folder;
+
 
         error_log("Folder: $folder, Dir: $dir");
         error_log("FILES tmp_name count: " . count($files['tmp_name'] ?? []));
