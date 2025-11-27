@@ -261,22 +261,42 @@ class DashboardProductsController extends Controller
         $dir = __DIR__ . '/../../../public/images/products/' . $folder;
 
         if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
+            @mkdir($dir, 0777, true);
         }
 
         foreach ($files['tmp_name'] as $i => $tmpName) {
             if (!$tmpName) continue;
 
+            $origName = $files['name'][$i] ?? 'unknown';
+            $errorCode = $files['error'][$i] ?? 0;
+
+            if ($errorCode !== UPLOAD_ERR_OK) {
+                continue; // Pula arquivo com erro
+            }
+
             // sanitiza nome e evita colisão
-            $origName = $files['name'][$i];
             $ext = pathinfo($origName, PATHINFO_EXTENSION);
             $safe = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', pathinfo($origName, PATHINFO_FILENAME));
             $name = time() . '_' . $safe . '.' . $ext;
             $path = $dir . DIRECTORY_SEPARATOR . $name;
 
-            if (move_uploaded_file($tmpName, $path)) {
-                // salva no banco o caminho relativo que você já usa
-                // ex: images/products/camisetas/nome.jpg
+            $moved = false;
+
+            // Tenta move_uploaded_file() primeiro
+            if (is_uploaded_file($tmpName)) {
+                $moved = @move_uploaded_file($tmpName, $path);
+            }
+
+            // Se falhar, tenta copy() como fallback
+            if (!$moved && file_exists($tmpName)) {
+                $moved = @copy($tmpName, $path);
+                if ($moved) {
+                    @unlink($tmpName); // Remove arquivo temp se copy foi bem-sucedido
+                }
+            }
+
+            // Se conseguiu mover/copiar, salva referência no BD
+            if ($moved && file_exists($path)) {
                 $relative = 'images/products/' . $folder . '/' . $name;
                 $this->productModel->addImage($productId, $relative);
             }
