@@ -167,17 +167,16 @@ class DashboardProductsController extends Controller
 
     public function update($id)
     {
+        error_log("=== UPDATE() CALLED id=$id ===");
+        
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            error_log("Não é POST, redirecionando");
             header('Location: ' . BASE_URL . '/dashboard/produtos');
             exit;
         }
 
-        $logFile = __DIR__ . '/../../../upload_log.txt';
-        file_put_contents($logFile, "\n=== UPDATE START id=$id ===" . PHP_EOL, FILE_APPEND);
-        file_put_contents($logFile, "FILES keys: " . implode(', ', array_keys($_FILES)) . PHP_EOL, FILE_APPEND);
-        if (isset($_FILES['imagens'])) {
-            file_put_contents($logFile, "FILES['imagens']['name']: " . implode(', ', $_FILES['imagens']['name'] ?? []) . PHP_EOL, FILE_APPEND);
-        }
+        error_log("É POST, continuando");
+        error_log("FILES: " . json_encode(array_keys($_FILES)));
 
         $id = (int)$id;
         
