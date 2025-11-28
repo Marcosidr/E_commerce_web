@@ -49,7 +49,7 @@ class Users
     /**
      * Criar usuário
      */
-    public function create(array $data): ?object
+    public function create( $data): ?object
     {
         try {
             $sql = "INSERT INTO usuarios 
@@ -57,12 +57,12 @@ class Users
                 VALUES 
                 (:nome, :email, :senha, :telefone, :data_nascimento, :genero, :newsletter, :sms_marketing, :role, NOW(), NOW(), 1)";
 
-            $stmt = $this->pdo->prepare($sql);
 
-            $stmt->execute([
+            $stmt = $this->pdo->prepare($sql);           
+             $stmt->execute([
+                ':senha'           => password_hash($data['senha'], PASSWORD_BCRYPT),
                 ':nome'            => $data['nome'],
                 ':email'           => $data['email'],
-                ':senha'           => $data['senha'],
                 ':telefone'        => $data['telefone'],
                 ':data_nascimento' => $data['data_nascimento'],
                 ':genero'          => $data['genero'],
@@ -70,7 +70,7 @@ class Users
                 ':sms_marketing'   => $data['sms_marketing'],
                 ':role'            => $data['role']
             ]);
-
+           
             return $this->getById((int)$this->pdo->lastInsertId());
 
         } catch (\Throwable $e) {

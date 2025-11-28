@@ -72,17 +72,17 @@ class RegistroController extends Controller
                 header('Location: ' . BASE_URL . '/cadastro');
                 exit;
             }
-
-            $userData = $this->users->create([
-                'name' => $nome . ' ' . $sobrenome,
-                'email' => $email,
-                'password' => password_hash($password, PASSWORD_DEFAULT),
-                'telefone' => $_POST['telefone'] ?? null,
-                'data_nascimento' => $_POST['data_nascimento'] ?? null,
-                'sexo' => $_POST['sexo'] ?? null,
-                'newsletter' => isset($_POST['newsletter']) ? 1 : 0,
-                'sms_marketing' => isset($_POST['sms_marketing']) ? 1 : 0
-            ]);
+$userData = $this->users->create([
+    'nome'            => $nome . ' ' . $sobrenome,
+    'email'           => $email,
+    'senha'           => $password, // o model já faz o hash
+    'telefone'        => $_POST['telefone'] ?? null,
+    'data_nascimento' => $_POST['data_nascimento'] ?? null,
+    'genero'          => $_POST['sexo'] ?? null,
+    'newsletter'      => isset($_POST['newsletter']) ? 1 : 0,
+    'sms_marketing'   => isset($_POST['sms_marketing']) ? 1 : 0,
+    'role'            => 'user'
+]);
 
             if ($userData) {
                 $_SESSION['success'] = 'Conta criada com sucesso!';
