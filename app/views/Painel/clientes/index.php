@@ -188,20 +188,23 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
                         <td><?= htmlspecialchars($c['email']) ?></td>
                         <td><?= htmlspecialchars($c['criado_em'] ?? '-') ?></td>
 
-                        <td class="text-end">
+                      <td class="text-end">
 
-                            <a class="action-btn action-edit"
-                               href="<?= BASE_URL ?>/dashboard/clientes/editar/<?= (int)$c['id'] ?>">
-                                ✏
-                            </a>
+      <!-- Botão Editar -->
+    <a class="action-btn action-edit"
+       href="<?= BASE_URL ?>/dashboard/clientes/<?= (int) $c['id'] ?>/editar">
+        ✏
+    </a>
 
-                            <a class="action-btn action-del"
-                               onclick="return confirm('Tem certeza que deseja excluir este cliente?')"
-                               href="<?= BASE_URL ?>/dashboard/clientes/deletar/<?= (int)$c['id'] ?>">
-                                🗑
-                            </a>
+    <!-- Botão Deletar -->
+    <a class="action-btn action-del"
+       href="<?= BASE_URL ?>/dashboard/clientes/<?= (int) $c['id'] ?>/deletar"
+       onclick="return confirm('Tem certeza que deseja excluir este cliente?')">
+        🗑
+    </a>
 
-                        </td>
+</td>
+
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -81,7 +81,8 @@ if (!isset($_SESSION['users']) || ($_SESSION['users']['role'] ?? '') !== 'admin'
     <div class="card shadow-lg">
         <div class="card-body p-4">
 
-            <form method="POST" action="<?= BASE_URL ?>/dashboard/clientes/update/<?= $cliente['id'] ?>" id="formEditarCliente" novalidate>
+          <form method="POST" action="<?= BASE_URL ?>/dashboard/clientes/<?= $cliente['id'] ?>/update" id="formEditarCliente" novalidate>
+
 
                 <!-- Dados Básicos -->
                 <h6 class="section-title"><i class="fas fa-user me-2"></i>Informações do Cliente</h6>

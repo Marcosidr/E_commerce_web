@@ -65,17 +65,30 @@ $router->add('/^dashboard\/pedidos\/(?P<id>\d+)\/deletar$/', 'DashboardOrders', 
 // Dashboard > Clientes
 $router->add('/^dashboard\/clientes$/', 'DashboardCustomers', 'index');
 $router->add('/^dashboard\/clientes\/(?P<id>\d+)$/', 'DashboardCustomers', 'show');
+
 // rotas adicionais para CRUD de clientes
-// =====================
-// DASHBOARD CLIENTES
-// =====================
+// Lista
 $router->add('/^dashboard\/clientes$/', 'DashboardCustomers', 'index');
+
+// Adicionar
 $router->add('/^dashboard\/clientes\/adicionar$/', 'DashboardCustomers', 'adicionar');
+
+// Store
 $router->add('/^dashboard\/clientes\/store$/', 'DashboardCustomers', 'store');
-$router->add('/^dashboard\/clientes\/(?P<id>\d+)$/', 'DashboardCustomers', 'show');
+
+// Editar
 $router->add('/^dashboard\/clientes\/(?P<id>\d+)\/editar$/', 'DashboardCustomers', 'editar');
+
+// Atualizar
 $router->add('/^dashboard\/clientes\/(?P<id>\d+)\/update$/', 'DashboardCustomers', 'update');
+
+// DELETAR — PRECISA FICAR ANTES DA ROTA GENÉRICA
 $router->add('/^dashboard\/clientes\/(?P<id>\d+)\/deletar$/', 'DashboardCustomers', 'deletar');
+
+// Mostrar cliente (GENÉRICA — SEMPRE POR ÚLTIMO)
+$router->add('/^dashboard\/clientes\/(?P<id>\d+)$/', 'DashboardCustomers', 'show');
+
+
 
 
 // =====================
